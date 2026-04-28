@@ -6,6 +6,7 @@ const morgan = require('morgan');
 // Importamos nuestro manejador de errores personalizado que creamos antes
 const AppError = require('./errors/AppError'); 
 const httpStatus = require('./constants/httpStatus');
+const authRoutes = require('./routes/authRoutes');
 
 // Inicializamos la aplicación de Express
 const app = express();
@@ -32,9 +33,11 @@ app.use(express.json());
 app.get('/api/saludo', (req, res) => {
   res.status(httpStatus.OK).json({
     status: 'success',
-      message: '¡Hola React! El backend está funcionando perfectamente'
+    message: '¡Hola React! El backend está funcionando perfectamente'
   });
 });
+
+app.use('/api/auth', authRoutes);
 
 // 3. MANEJO DE RUTAS NO ENCONTRADAS (Si React pide una URL que no existe)
 // Cambiamos app.all('*') por app.use() para compatibilidad con Express 5
