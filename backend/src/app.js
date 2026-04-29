@@ -7,6 +7,7 @@ const morgan = require('morgan');
 const AppError = require('./errors/AppError'); 
 const httpStatus = require('./constants/httpStatus');
 const authRoutes = require('./routes/authRoutes');
+const controlAccesoRoutes = require('./routes/controlAccesoRoutes');
 
 // Inicializamos la aplicación de Express
 const app = express();
@@ -38,6 +39,7 @@ app.get('/api/saludo', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/accesos', controlAccesoRoutes);
 
 // 3. MANEJO DE RUTAS NO ENCONTRADAS (Si React pide una URL que no existe)
 // Cambiamos app.all('*') por app.use() para compatibilidad con Express 5

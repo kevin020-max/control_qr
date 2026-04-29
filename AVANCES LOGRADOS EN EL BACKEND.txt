@@ -1,0 +1,27 @@
+AVANCES LOGRADOS EN EL BACKEND DEL CONTROL QR:
+✅ Configuración y Seguridad Base: Servidor, base de datos y manejo de errores.
+
+✅ Validación de Datos: Zod asegurando que no entre "basura" al sistema.
+
+✅ Autenticación: Controlador y Modelo trabajando juntos para verificar credenciales, encriptar contraseñas y generar un Token JWT seguro.
+
+===============================================================
+
+El Token JWT es la llave maestra que le entregamos al usuario cuando inicia sesión correctamente.
+
+El middleware protegerRuta es el guardia en la puerta principal del edificio. Solo te deja entrar si tu llave es original y no ha caducado.
+
+El middleware restringirA es el lector de tarjetas de las zonas VIP (como la oficina del director). Aunque estés dentro del edificio, este lector verifica si el nivel de tu llave (tu Rol) tiene permiso para abrir esa puerta específica.
+
+===============================================================
+El escáner NO compara nada. El escáner (la pistola láser o la cámara del celular) es un dispositivo "tonto". Su único trabajo en la vida es ver un dibujo de cuadritos blancos y negros y traducirlo a un texto, en este caso, el número "1". ¡Eso es todo lo que hace!
+
+Quien SÍ está comparando la información, tomando decisiones y haciendo la magia es tu Backend (el código que acabas de escribir). El flujo real que acabas de comprobar es este:
+
+El escáner lee el QR y obtiene un "1".
+
+El Frontend (React o Thunder Client) le grita a tu servidor Node.js: "¡Oye, me acaban de dar este número 1!".
+
+Tu Controlador recibe el "1", llama a tu Modelo, viaja a la Base de Datos MySQL y pregunta: "¿Quién es el dueño del QR 1? ¿Está activo? ¿Está adentro o afuera?".
+
+Tu base de datos responde, tu código calcula que debe marcar la salida, la guarda, y devuelve ese hermoso JSON de éxito.
