@@ -8,4 +8,8 @@ export default defineConfig({
     react(),
     babel({ presets: [reactCompilerPreset()] })
   ],
+  server: {
+    host: true, // Esto obliga a Vite a exponer la red local siempre
+    port: 5173, // El puerto que ya estamos usando
+  }
 })
