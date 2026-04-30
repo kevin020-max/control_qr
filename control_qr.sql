@@ -78,7 +78,7 @@ CREATE TABLE rol_permiso(
 
 CREATE TABLE usuarios(
     id_usuario INT PRIMARY KEY AUTO_INCREMENT,
-    usuario VARCHAR(40) UNIQUE, 
+    numero_documento INT UNIQUE, 
     contraseña VARCHAR(60),
     id_rol INT,
     FOREIGN KEY (id_rol) REFERENCES roles(id_rol)

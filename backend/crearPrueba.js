@@ -16,7 +16,7 @@ const crearUsuarioAdmin = async () => {
 
         // 3. Insertar el usuario en la base de datos
         // Usamos IGNORE para que no dé error si ya corriste el script antes (por el UNIQUE del usuario)
-        const sql = `INSERT IGNORE INTO usuarios (usuario, contraseña, id_rol) VALUES ('operario_principal', ?, 1)`;
+        const sql = `INSERT IGNORE INTO usuarios (numero_documento, contraseña, id_rol) VALUES ('123456789', ?, 1)`;
         await pool.query(sql, [contrasenaEncriptada]);
 
         console.log('✅ ¡Usuario creado con éxito!');

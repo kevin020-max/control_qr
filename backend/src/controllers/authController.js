@@ -18,14 +18,14 @@ const usuarioModel = require('../models/usuarioModel');
  */
 const login = catchAsync(async (req, res, next) => {
 
-  // 1. Validar los datos de entrada con Zod
-  // Usamos .parse() que revisa que req.body cumpla con las reglas que definimos.
-  // Si no cumple, Zod lanzará un error que será atrapado por catchAsync.
+  // 1. CREAMOS la variable 'datosValidados' pasando el req.body por nuestro esquema Zod
   const datosValidados = loginSchema.parse(req.body);
 
-  // 2. Buscar si el usuario existe en la base de datos
-  // Usamos await porque consultar a MySQL toma unos milisegundos.
-  const usuarioEncontrado = await usuarioModel.buscarPorUsuario(datosValidados.usuario);
+  /// 2. Ahora sí podemos extraer el documento y la contraseña de los datos que ya pasaron la validación
+  const { numero_documento, contrasena } = datosValidados;
+
+  // 3. Buscamos al usuario en la base de datos usando el modelo que corregimos antes
+  const usuarioEncontrado = await usuarioModel.buscarPorDocumento(numero_documento);
 
   // Si el modelo retorna 'undefined' (no encontró nada), bloqueamos el acceso.
   // Damos un mensaje genérico por seguridad, para que un hacker no sepa si falló el usuario o la clave.
@@ -33,7 +33,7 @@ const login = catchAsync(async (req, res, next) => {
     return next(new AppError('Usuario o contraseña incorrectos', httpStatus.UNAUTHORIZED));
   }
 
-  // 3. Comparar la contraseña
+  //Comparar la contraseña
   // En la base de datos la contraseña está encriptada. bcrypt.compare toma la clave en texto plano
   // (que envió el frontend) y la compara matemáticamente con el hash de la base de datos.
   const contrasenaValida = await bcrypt.compare(datosValidados.contrasena, usuarioEncontrado.contraseña);
