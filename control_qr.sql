@@ -102,3 +102,6 @@ VALUES (100500123, 'CC', 'Juan', 'Pérez', CURDATE(), 1, 1);
 -- Le ponemos que expira en el año 2030 para que no tengamos problemas de prueba
 INSERT INTO qr_control (id_qr, estado, fecha_creacion, fecha_expiracion, id_persona) 
 VALUES (1, 'activo', NOW(), '2030-12-31 23:59:59', 1);
+
+INSERT INTO personas (numero_documento, tipo_doc, nombres, apellidos, fecha_registro, tipo_persona, tipo_estado) 
+VALUES (1114309103, 'CC', 'Samuel', 'Nuñez Gamboa', CURDATE(), 1, 1);

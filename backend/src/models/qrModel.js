@@ -1,37 +1,32 @@
 const db = require('../config/conexion_db');
 
-/**
- * Busca un QR por su ID y trae los datos de la persona asociada.
- */
-
-const buscarQrPorId = async (idQr) => {
-  // Usamos una consulta SQL con un 'JOIN' para unir dos tablas: qr_control y personas.
-  // Esto es mucho más rápido y escalable que hacer dos consultas separadas.
-  // El signo de interrogación (?) nos protege de la inyección SQL.
-  const consultaSql = `
-    SELECT
-      qr.id_qr,
-      qr.estado AS estado_qr,
-      qr.fecha_expiracion,
-      p.id_persona,
-      p.nombres,
-      p.apellidos,
-      p.tipo_estado AS estado_persona,
-      tp.nombre_tipo AS tipo_persona_texto
-    FROM qr_control qr
-    JOIN personas p ON qr.id_persona = p.id_persona
-    JOIN tipo_persona tp ON p.tipo_persona = tp.tipo_persona
-    WHERE qr.id_qr = ?
-  `;
-
-  // Ejecutamos la consulta pasándole el idQr para reemplazar el '?'
-  const [filas] = await db.query(consultaSql, [idQr]);
-
-  // Retornamos el primer resultado (ya que un ID de QR es único)
-  // Si no existe, retornará undefined
-  return filas[0];
+const qrModel = {
+  // Nueva función: Busca cruzando las tablas por el número de documento
+  async buscarQrPorDocumento(numero_documento) {
+    const sql = `
+      SELECT 
+        p.id_persona, 
+        p.numero_documento, 
+        p.nombres, 
+        p.apellidos, 
+        p.tipo_estado AS estado_persona,
+        tp.nombre_tipo AS tipo_persona_texto,
+        q.id_qr,
+        q.estado AS estado_qr,
+        q.fecha_expiracion
+      FROM personas p
+      JOIN tipo_persona tp ON p.tipo_persona = tp.tipo_persona
+      -- Usamos LEFT JOIN por si la persona existe pero aún no tiene QR asignado
+      LEFT JOIN qr_control q ON p.id_persona = q.id_persona
+      WHERE p.numero_documento = ?
+    `;
+    
+    // Ejecutamos la consulta pasándole el número de documento
+    const [filas] = await db.execute(sql, [numero_documento]);
+    
+    // Retornamos el primer resultado (o undefined si no encontró nada)
+    return filas[0];
+  }
 };
 
-module.exports = {
-  buscarQrPorId
-};
+module.exports = qrModel;

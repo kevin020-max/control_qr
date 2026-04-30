@@ -1,50 +1,54 @@
+// src/controllers/controlAccesoController.js
 const catchAsync = require('../errors/catchAsync');
 const AppError = require('../errors/AppError');
 const httpStatus = require('../constants/httpStatus');
 
-// Importamos los dos modelos que creamos en los pasos anteriores
 const qrModel = require('../models/qrModel');
 const controlAccesoModel = require('../models/controlAccesoModel');
+const { escanearQRSchema } = require('../validators/controlAccesoValidator');
 
-//Controlador para procesar el escaneo de un codigo QR
 const escanearQr = catchAsync(async (req, res, next) => {
-  // 1. Extraer el ID del QR que nos envía React (o Thunder Client) en el body
-  const { id_qr } = req.body;
+  // 1. Zod extrae y valida el documento (número limpio)
+  const { id_qr } = escanearQRSchema.parse(req.body);
 
-  if (!id_qr) {
-    return next(new AppError('Por favor, proporciona el código QR escaneado', httpStatus.BAD_REQUEST));
-  }
+  // 2. Buscamos a la persona cruzando las tablas (personas + tipo_persona + qr_control)
+  const infoQr = await qrModel.buscarQrPorDocumento(id_qr);
 
-  //2. buscar el qr y a su dueño en la base de datos
-  const infoQr = await qrModel.buscarQrPorId(id_qr);
-
-  //Si el qr no existe en la base de datos, bloqueamos el acceso
   if (!infoQr) {
-    return next(new AppError('Código QR no válido o no registrado en el sistema.', httpStatus.NOT_FOUND));
+    return next(new AppError('Usuario no encontrado en el sistema.', httpStatus.NOT_FOUND));
   }
 
-  //3. Validar el estado QR y de la persona
-  if (infoQr.estado_qr === 'expirado') {
-    return next(new AppError('Este código QR temporal ha expirado', httpStatus.FORBIDDEN));
-  }
-
-  if (infoQr.estado_persona !== 1) {//1 es 'activo'
+  // 3. REGLA GENERAL: Validar que la persona esté ACTIVA en el centro
+  // El ID 1 significa 'activo' en tu base de datos
+  if (infoQr.estado_persona !== 1) { 
     return next(new AppError(`Acceso denegado: El usuario ${infoQr.nombres} se encuentra INACTIVO.`, httpStatus.FORBIDDEN));
   }
 
-  //4. Logica de entrada o de salida
+  // 4. REGLA DE NEGOCIO: Diferenciar Visitantes de Personal Permanente
+  // Convertimos a minúsculas por si acaso viene como "VISITANTE" o "visitante"
+  if (infoQr.tipo_persona_texto.toLowerCase() === 'visitante') {
+    // Si es visitante, SÍ debe tener un QR temporal
+    if (!infoQr.id_qr) {
+      return next(new AppError(`El visitante ${infoQr.nombres} no tiene un QR temporal asignado.`, httpStatus.BAD_REQUEST));
+    }
+    // Y debemos validar que ese QR no esté expirado[cite: 2]
+    if (infoQr.estado_qr === 'expirado') {
+      return next(new AppError('Acceso denegado: Este código QR temporal ha expirado', httpStatus.FORBIDDEN));
+    }
+  }
+
+  // 5. Lógica de entrada o salida
   // Revisamos si la persona ya tiene un ingreso sin salida
   const ingresoActivo = await controlAccesoModel.buscarIngresoActivo(infoQr.id_persona);
 
   let mensajeRespuesta = '';
   let tipoAccion = '';
 
-  //req.usuario.id_usuario viene del token del operario (del middleware protegerRuta que hicimos antes)
-
-  const idOperario = req.usuario.id_usuario;
+  // Ojo aquí: usualmente el middleware de autenticación inyecta "req.user"
+  const idOperario = req.usuario.id_usuario; 
 
   if (ingresoActivo) {
-    // Si ya tenía un ingreso, le marcamos la SALIDA
+    // Si ya tenía un ingreso abierto, le marcamos la SALIDA
     await controlAccesoModel.registrarSalida(ingresoActivo.id_control);
     mensajeRespuesta = 'Salida registrada correctamente';
     tipoAccion = 'salida';
@@ -55,7 +59,7 @@ const escanearQr = catchAsync(async (req, res, next) => {
     tipoAccion = 'entrada';
   }
 
-  //5. Enviar la respuesta de exito a react
+  // 6. Enviar la respuesta de éxito a React
   res.status(httpStatus.OK).json({
     status: 'success',
     message: mensajeRespuesta,

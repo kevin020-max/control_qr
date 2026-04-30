@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import RutaProtegida from './components/RutaProtegida';
+import Escaner from './pages/Escaner';
 
 // Pantallas temporales para rellenar el Dashboard por ahora
 const EscanerTemp = () => <h2>Pantalla del Escáner (Próximamente)</h2>;
@@ -24,7 +25,7 @@ function App() {
             <Route index element={<Navigate to="escaner" replace />} />
             
             {/* Rutas anidadas hijas */}
-            <Route path="escaner" element={<EscanerTemp />} />
+            <Route path="escaner" element={<Escaner />} />
             <Route path="visitantes" element={<VisitantesTemp />} />
           </Route>
           
