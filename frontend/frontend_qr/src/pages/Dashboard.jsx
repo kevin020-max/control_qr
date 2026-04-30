@@ -1,6 +1,6 @@
 // src/pages/Dashboard.jsx
 import { Outlet, Link, useNavigate } from 'react-router-dom';
-import { FaQrcode, FaUserPlus, FaSignOutAlt } from 'react-icons/fa';
+import { FaQrcode, FaUserPlus, FaSignOutAlt, FaHome } from 'react-icons/fa';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -27,6 +27,9 @@ const Dashboard = () => {
           </Link>
           <Link to="/dashboard/visitantes" style={estilos.link}>
             <FaUserPlus style={estilos.icono} /> Registrar Visitante
+          </Link>
+          <Link to="/dashboard" style={estilos.link}>
+            <FaHome style={estilos.icono} /> Inicio
           </Link>
         </nav>
 

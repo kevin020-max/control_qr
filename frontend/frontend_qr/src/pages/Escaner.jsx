@@ -2,112 +2,112 @@
 import { useState } from 'react';
 import { Scanner } from '@yudiel/react-qr-scanner';
 import api from '../services/api';
-import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // Íconos para hacer la UI más amigable
+import { FaCheckCircle, FaTimesCircle, FaKeyboard } from 'react-icons/fa'; // Añadimos ícono de teclado
 
 const Escaner = () => {
-  // --- ESTADOS DE LA PANTALLA ---
-  // pausarCamara: Evita que el escáner lea 30 veces por segundo el mismo QR
   const [pausarCamara, setPausarCamara] = useState(false);
-  // resultado: Guardará los datos del éxito o el mensaje de error para mostrarlo en pantalla
-  const [resultado, setResultado] = useState(null); 
+  const [resultado, setResultado] = useState(null);
+  
+  // NUEVO: Estado para guardar el documento que el operario escribe a mano
+  const [documentoManual, setDocumentoManual] = useState('');
 
   // --- FUNCIÓN AYUDANTE: EXTRACTOR DE DOCUMENTO ---
-  // Esta función toma el texto revuelto del carnet del SENA y saca solo los números
   const extraerDocumento = (textoLargo) => {
-    // La expresión regular /\d+/g busca agrupaciones de solo números dentro del texto
     const coincidencias = textoLargo.match(/\d+/g); 
-
-    // Si encontró números, asumiremos que el primero (o el más largo) es el documento
-    if (coincidencias && coincidencias.length > 0) {
-      // En "SAMUEL NUNEZ 1114309103", devolverá "1114309103"
-      return coincidencias[0]; 
-    }
-    
-    // Si por alguna razón escanean un QR que no tiene números, devolvemos el texto original
+    if (coincidencias && coincidencias.length > 0) return coincidencias[0]; 
     return textoLargo; 
   };
 
-  // --- FUNCIÓN PRINCIPAL: MANEJAR LA LECTURA DEL QR ---
-  const manejarEscaneo = async (textoLeido) => {
-    // 1. Si la cámara está en pausa (procesando un QR anterior), ignoramos la lectura
-    if (pausarCamara) return; 
+  // --- FUNCIÓN REUTILIZABLE: ENVIAR AL BACKEND ---
+  // Separamos la lógica de enviar al backend para usarla tanto con la cámara como con el input manual
+  const procesarAcceso = async (numeroDocumento) => {
+    setResultado(null);
 
-    // 2. Pausamos la cámara inmediatamente y limpiamos mensajes anteriores
-    setPausarCamara(true);
-    setResultado(null); 
-
-    // 3. Extraemos el texto crudo que leyó la cámara
-    const datosCrudosQR = textoLeido[0].rawValue;
-
-    // 4. Pasamos el texto por nuestro "limpiador" para obtener solo el número
-    const numeroLimpio = extraerDocumento(datosCrudosQR);
-
-    console.log("============= LECTURA DE QR =============");
-    console.log("Texto original del carnet:", datosCrudosQR);
-    console.log("Número extraído (Cédula):", numeroLimpio);
-    console.log("=========================================");
-
-    // 5. Enviamos el número limpio al Backend
     try {
-      // Envolvemos numeroLimpio en Number() para asegurar que Zod reciba un tipo numérico
+      // Enviamos el número al backend
       const respuesta = await api.post('/accesos/escanear', {
-        id_qr: Number(numeroLimpio) 
+        id_qr: Number(numeroDocumento) 
       });
 
-      // 6. Si el backend responde OK, extraemos los datos y los preparamos para la pantalla
       const datos = respuesta.data.data;
       setResultado({
         tipo: 'exito',
-        mensaje: respuesta.data.message, // Ej: "Entrada registrada exitosamente"
-        accion: datos.accion, // "ENTRADA" o "SALIDA"
+        mensaje: respuesta.data.message, 
+        accion: datos.accion,
         persona: `${datos.persona.nombres} ${datos.persona.apellidos}`,
         rol: datos.persona.tipo_persona
       });
 
     } catch (error) {
-      // 7. Si el backend arroja error (ej: QR no existe, persona inactiva)
       setResultado({
         tipo: 'error',
-        mensaje: error.response?.data?.message || 'Error al procesar el código QR en el servidor.'
+        mensaje: error.response?.data?.message || 'Error al procesar el acceso.'
       });
     }
 
-    // 8. Temporizador: Esperamos 4 segundos para que el guardia lea el mensaje, 
-    // luego limpiamos la alerta y reactivamos la cámara para el siguiente carnet.
+    // Limpiamos la alerta después de 4 segundos
     setTimeout(() => {
       setResultado(null);
       setPausarCamara(false);
+      setDocumentoManual(''); // Limpiamos el input manual también
     }, 4000);
   };
 
-  // --- RENDERIZADO DE LA INTERFAZ (UI) ---
+  // 1. Cuando la cámara lee un QR
+  const manejarEscaneo = (textoLeido) => {
+    if (pausarCamara) return; 
+    setPausarCamara(true);
+    const numeroLimpio = extraerDocumento(textoLeido[0].rawValue);
+    procesarAcceso(numeroLimpio); // Llamamos a nuestra función central
+  };
+
+  // 2. NUEVO: Cuando el operario envía el formulario manual
+  const manejarEnvioManual = (e) => {
+    e.preventDefault(); // Evitamos que la página se recargue
+    if (!documentoManual) return;
+    
+    setPausarCamara(true); // Pausamos la cámara mientras procesamos esto
+    procesarAcceso(documentoManual); // Llamamos a la MISMA función central
+  };
+
   return (
     <div style={estilos.contenedor}>
-      <h2 style={estilos.titulo}>Escáner de Acceso</h2>
+      <h2 style={estilos.titulo}>Control de Accesos</h2>
       <p style={{textAlign: 'center', marginBottom: '20px', color: '#4b5563'}}>
-        Apunta el código QR del carnet a la cámara
+        Escanea el carnet o ingresa el documento manualmente.
       </p>
 
-      {/* COMPONENTE DE LA CÁMARA */}
+      {/* CÁMARA */}
       <div style={estilos.cajaCamara}>
         <Scanner 
           onScan={manejarEscaneo}
           paused={pausarCamara}
-          formats={['qr_code']} // Optimizamos para que solo busque códigos QR
+          formats={['qr_code']} 
         />
       </div>
 
-      {/* SISTEMA DE ALERTAS (Se muestra solo si hay un resultado) */}
+      {/* NUEVO: FORMULARIO MANUAL */}
+      <form onSubmit={manejarEnvioManual} style={estilos.formularioManual}>
+        <div style={estilos.grupoInput}>
+          <FaKeyboard style={estilos.iconoInput} />
+          <input 
+            type="number" 
+            placeholder="Ej: 1114309103" 
+            value={documentoManual}
+            onChange={(e) => setDocumentoManual(e.target.value)}
+            style={estilos.inputManual}
+            disabled={pausarCamara} // Lo bloqueamos si el sistema está procesando algo
+          />
+        </div>
+        <button type="submit" style={estilos.botonManual} disabled={pausarCamara}>
+          Registrar
+        </button>
+      </form>
+
+      {/* ALERTAS */}
       {resultado && (
         <div style={resultado.tipo === 'exito' ? estilos.alertaExito : estilos.alertaError}>
-          {/* Ícono dinámico según el resultado */}
-          {resultado.tipo === 'exito' ? (
-             <FaCheckCircle style={estilos.iconoAlerta} /> 
-          ) : (
-             <FaTimesCircle style={estilos.iconoAlerta} />
-          )}
-          
-          {/* Texto de la alerta */}
+          {resultado.tipo === 'exito' ? <FaCheckCircle style={estilos.iconoAlerta} /> : <FaTimesCircle style={estilos.iconoAlerta} />}
           <div>
             <h3 style={{margin: '0 0 5px 0', fontSize: '18px'}}>{resultado.mensaje}</h3>
             {resultado.tipo === 'exito' && (
@@ -122,55 +122,21 @@ const Escaner = () => {
   );
 };
 
-// --- ESTILOS EN LÍNEA (CSS) ---
+// ... estilos anteriores más los nuevos para el input manual
 const estilos = {
-  contenedor: { 
-    maxWidth: '550px', 
-    margin: '0 auto', 
-    padding: '25px', 
-    backgroundColor: 'white', 
-    borderRadius: '12px', 
-    boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' 
-  },
-  titulo: { 
-    color: '#39A900', // Verde SENA
-    textAlign: 'center',
-    margin: '0 0 10px 0'
-  },
-  cajaCamara: { 
-    overflow: 'hidden', 
-    borderRadius: '12px', 
-    border: '4px solid #f3f4f6', 
-    marginBottom: '20px', 
-    backgroundColor: '#000',
-    display: 'flex',
-    justifyContent: 'center'
-  },
-  alertaExito: { 
-    display: 'flex', 
-    alignItems: 'center', 
-    backgroundColor: '#f0fdf4', 
-    color: '#15803d', 
-    padding: '16px', 
-    borderRadius: '8px', 
-    border: '1px solid #bbf7d0',
-    animation: 'fadeIn 0.3s ease'
-  },
-  alertaError: { 
-    display: 'flex', 
-    alignItems: 'center', 
-    backgroundColor: '#fef2f2', 
-    color: '#b91c1c', 
-    padding: '16px', 
-    borderRadius: '8px', 
-    border: '1px solid #fecaca',
-    animation: 'fadeIn 0.3s ease'
-  },
-  iconoAlerta: { 
-    fontSize: '35px', 
-    marginRight: '15px',
-    flexShrink: 0
-  }
+  contenedor: { maxWidth: '550px', margin: '0 auto', padding: '25px', backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' },
+  titulo: { color: '#39A900', textAlign: 'center', margin: '0 0 10px 0' },
+  cajaCamara: { overflow: 'hidden', borderRadius: '12px', border: '4px solid #f3f4f6', marginBottom: '20px', backgroundColor: '#000', display: 'flex', justifyContent: 'center' },
+  // Estilos Nuevos
+  formularioManual: { display: 'flex', gap: '10px', marginBottom: '20px' },
+  grupoInput: { display: 'flex', alignItems: 'center', flex: 1, backgroundColor: '#f9fafb', border: '1px solid #d1d5db', borderRadius: '8px', padding: '0 15px' },
+  iconoInput: { color: '#9ca3af', marginRight: '10px' },
+  inputManual: { border: 'none', backgroundColor: 'transparent', width: '100%', padding: '12px 0', outline: 'none', fontSize: '16px' },
+  botonManual: { backgroundColor: '#39A900', color: 'white', border: 'none', padding: '0 20px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' },
+  // Estilos de alerta
+  alertaExito: { display: 'flex', alignItems: 'center', backgroundColor: '#f0fdf4', color: '#15803d', padding: '16px', borderRadius: '8px', border: '1px solid #bbf7d0', animation: 'fadeIn 0.3s ease' },
+  alertaError: { display: 'flex', alignItems: 'center', backgroundColor: '#fef2f2', color: '#b91c1c', padding: '16px', borderRadius: '8px', border: '1px solid #fecaca', animation: 'fadeIn 0.3s ease' },
+  iconoAlerta: { fontSize: '35px', marginRight: '15px', flexShrink: 0 }
 };
 
 export default Escaner;
