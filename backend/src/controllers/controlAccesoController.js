@@ -64,7 +64,8 @@ const escanearQr = catchAsync(async (req, res, next) => {
       persona: {
         nombres: infoQr.nombres,
         apellidos: infoQr.apellidos,
-        tipo_persona: infoQr.tipo_persona
+        tipo_persona: infoQr.tipo_persona_texto,
+        estado: infoQr.estado_persona === 1 ? 'activo' : 'inactivo'
       }
     }
   });

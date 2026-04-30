@@ -93,3 +93,12 @@ CREATE TABLE control_acceso (
     FOREIGN KEY (id_persona) REFERENCES personas(id_persona),
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
 );
+
+-- 2. Creamos a nuestro aprendiz de prueba (Juan Pérez)
+INSERT INTO personas (numero_documento, tipo_doc, nombres, apellidos, fecha_registro, tipo_persona, tipo_estado) 
+VALUES (100500123, 'CC', 'Juan', 'Pérez', CURDATE(), 1, 1);
+
+-- 3. Le creamos un código QR activo (el ID de este QR será 1)
+-- Le ponemos que expira en el año 2030 para que no tengamos problemas de prueba
+INSERT INTO qr_control (id_qr, estado, fecha_creacion, fecha_expiracion, id_persona) 
+VALUES (1, 'activo', NOW(), '2030-12-31 23:59:59', 1);

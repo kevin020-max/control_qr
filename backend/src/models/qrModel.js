@@ -17,9 +17,10 @@ const buscarQrPorId = async (idQr) => {
       p.nombres,
       p.apellidos,
       p.tipo_estado AS estado_persona,
-      p.tipo_persona
+      tp.nombre_tipo AS tipo_persona_texto
     FROM qr_control qr
     JOIN personas p ON qr.id_persona = p.id_persona
+    JOIN tipo_persona tp ON p.tipo_persona = tp.tipo_persona
     WHERE qr.id_qr = ?
   `;
 

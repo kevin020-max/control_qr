@@ -25,3 +25,8 @@ El Frontend (React o Thunder Client) le grita a tu servidor Node.js: "¡Oye, me 
 Tu Controlador recibe el "1", llama a tu Modelo, viaja a la Base de Datos MySQL y pregunta: "¿Quién es el dueño del QR 1? ¿Está activo? ¿Está adentro o afuera?".
 
 Tu base de datos responde, tu código calcula que debe marcar la salida, la guarda, y devuelve ese hermoso JSON de éxito.
+
+===============================================================
+
+Las Transacciones SQL.
+Si creamos a la persona, pero justo cuando vamos a crear el QR se va la luz o falla el servidor, tendríamos a un visitante "fantasma" sin QR en la base de datos. Una transacción asegura que o se guardan los tres pasos, o no se guarda ninguno (se hace un rollback o reversa).
