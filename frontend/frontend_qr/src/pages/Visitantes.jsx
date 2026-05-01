@@ -1,4 +1,3 @@
-// src/pages/Visitantes.jsx
 import { useState } from 'react';
 import api from '../services/api';
 import { QRCodeSVG } from 'qrcode.react';
@@ -11,7 +10,7 @@ const Visitantes = () => {
     nombres: '',
     apellidos: '',
     observacion: '',
-    horas_validez: 2 // Por defecto 2 horas[cite: 4]
+    horas_validez: 2 // Por defecto 2 horas
   });
 
   // Estado para manejar alertas y mostrar el QR generado
@@ -46,9 +45,7 @@ const Visitantes = () => {
       // 3. Mostramos el mensaje de éxito que nos devuelve Node.js
       setMensaje({ texto: respuesta.data.message || 'Visitante registrado con éxito', tipo: 'exito' });
       
-      // 4. ¡LA SOLUCIÓN! 
-      // Le pasamos directamente el número de documento a nuestra variable qrGenerado.
-      // Al hacer esto, React dirá: "¡Ah! Ya tengo un dato, voy a ocultar el formulario y dibujar el QR".
+      // 4. Generamos el QR: Para esto, le pasamos el número de documento que el backend usará para validar el acceso.
       setQrGenerado(datosAEnviar.numero_documento);
       
       // 5. Limpiamos el formulario en el fondo por si quieren registrar a alguien más después

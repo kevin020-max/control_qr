@@ -94,14 +94,45 @@ CREATE TABLE control_acceso (
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
 );
 
--- 2. Creamos a nuestro aprendiz de prueba (Juan Pérez)
+-- 2. Creamos a nuestros aprendices de prueba
 INSERT INTO personas (numero_documento, tipo_doc, nombres, apellidos, fecha_registro, tipo_persona, tipo_estado) 
 VALUES (100500123, 'CC', 'Juan', 'Pérez', CURDATE(), 1, 1);
 
--- 3. Le creamos un código QR activo (el ID de este QR será 1)
--- Le ponemos que expira en el año 2030 para que no tengamos problemas de prueba
-INSERT INTO qr_control (id_qr, estado, fecha_creacion, fecha_expiracion, id_persona) 
-VALUES (1, 'activo', NOW(), '2030-12-31 23:59:59', 1);
-
 INSERT INTO personas (numero_documento, tipo_doc, nombres, apellidos, fecha_registro, tipo_persona, tipo_estado) 
 VALUES (1114309103, 'CC', 'Samuel', 'Nuñez Gamboa', CURDATE(), 1, 1);
+
+-- 1. Borramos las tablas dependientes primero para evitar errores
+DROP TABLE IF EXISTS control_acceso;
+DROP TABLE IF EXISTS usuarios;
+
+-- 2. Creamos la tabla de usuarios adaptada a tu requerimiento
+CREATE TABLE usuarios(
+    id_usuario INT PRIMARY KEY AUTO_INCREMENT,
+    numero_documento INT UNIQUE NOT NULL, -- Este será nuestro "Usuario" para el Login
+    contrasenia VARCHAR(255) NOT NULL,    -- OBLIGATORIO: Ampliamos a 255 para el hash de seguridad
+    estado INT DEFAULT 1,                 -- 1: Activo, 2: Inactivo
+    id_rol INT,
+    FOREIGN KEY (numero_documento) REFERENCES personas(numero_documento),
+    FOREIGN KEY (id_rol) REFERENCES roles(id_rol)
+);
+
+-- 3. Insertamos los roles de la institución
+INSERT INTO roles (id_rol, nombre_rol) VALUES
+(1, 'Administrador'),
+(2, 'Operario'),
+(3, 'Instructor'),
+(4, 'Coordinador');
+
+-- 4. Creamos los permisos
+INSERT INTO permisos (id_permiso, nombre_permiso) VALUES
+(1, 'escanear_qr'),
+(2, 'registrar_visitante'),
+(3, 'carga_masiva'),
+(4, 'ver_reportes');
+
+-- 5. Asignamos permisos a los roles (RBAC)
+INSERT INTO rol_permiso (id_rol, id_permiso) VALUES
+(1, 1), (1, 2), (1, 3), (1, 4), -- Admin hace todo
+(2, 1), (2, 2),                 -- Operario/Guarda escanea y registra visitantes
+(3, 4),                         -- Instructor ve reportes
+(4, 4);                         -- Coordinador ve reportes

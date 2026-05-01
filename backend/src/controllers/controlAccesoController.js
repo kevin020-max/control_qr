@@ -2,7 +2,6 @@
 const catchAsync = require('../errors/catchAsync');
 const AppError = require('../errors/AppError');
 const httpStatus = require('../constants/httpStatus');
-
 const qrModel = require('../models/qrModel');
 const controlAccesoModel = require('../models/controlAccesoModel');
 const { escanearQRSchema } = require('../validators/controlAccesoValidator');

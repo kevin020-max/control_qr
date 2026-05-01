@@ -1,4 +1,3 @@
-// src/pages/Dashboard.jsx
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { FaQrcode, FaUserPlus, FaSignOutAlt, FaHome } from 'react-icons/fa';
 
@@ -47,7 +46,7 @@ const Dashboard = () => {
   );
 };
 
-// Estilos rápidos en línea (Puedes pasarlos a CSS después)
+// Estilos rápidos en línea
 const estilos = {
   contenedorPrincipal: { display: 'flex', height: '100vh', backgroundColor: '#f3f4f6' },
   sidebar: { width: '250px', backgroundColor: '#39A900', display: 'flex', flexDirection: 'column', color: 'white' },

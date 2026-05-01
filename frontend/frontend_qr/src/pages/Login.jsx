@@ -1,4 +1,3 @@
-// src/pages/Login.jsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaIdCard, FaLock } from 'react-icons/fa'; // Íconos para los inputs
@@ -86,7 +85,7 @@ const Login = () => {
   );
 };
 
-// 6. ESTILOS BÁSICOS (Para que no se vea feo mientras luego le aplicas CSS real)
+// 6. ESTILOS BÁSICOS
 const estilos = {
   contenedor: { height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#f3f4f6' },
   tarjeta: { backgroundColor: 'white', padding: '40px', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', width: '100%', maxWidth: '400px' },

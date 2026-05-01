@@ -1,8 +1,7 @@
-// Importamos nuestra conexión a la base de datos (el pool que creamos antes)
 const db = require('../config/conexion_db');
 
 /**
- * Busca un usuario en la base de datos por su nombre de usuario.
+ * Busca un usuario en la base de datos por su número de documento.
  * Usamos async/await porque la consulta a la base de datos toma tiempo.
  */
 const buscarPorDocumento = async (numeroDocumento) => {

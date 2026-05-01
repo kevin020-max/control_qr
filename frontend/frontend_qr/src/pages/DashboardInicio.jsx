@@ -1,10 +1,5 @@
-// src/pages/DashboardInicio.jsx
-
-// 1. IMPORTACIONES
 import { useState, useEffect } from 'react';
-// Importamos los íconos necesarios para la interfaz
 import { FaUserFriends, FaSignInAlt, FaSignOutAlt, FaUserPlus, FaRegClock } from 'react-icons/fa';
-// Importamos nuestra instancia de axios configurada para hacer peticiones al backend
 import api from '../services/api';
 
 const DashboardInicio = () => {

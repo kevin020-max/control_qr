@@ -1,4 +1,3 @@
-// src/pages/Escaner.jsx
 import { useState } from 'react';
 import { Scanner } from '@yudiel/react-qr-scanner';
 import api from '../services/api';

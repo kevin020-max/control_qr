@@ -3,11 +3,13 @@ const { promisify } = require('util'); // Convierte funciones antiguas basadas e
 const AppError = require('../errors/AppError');
 const catchAsync = require('../errors/catchAsync');
 const httpStatus = require('../constants/httpStatus');
+const db = require('../config/conexion_db');
 
 /**
  * Middleware 1: Verificar que el usuario tenga un Token válido (Haber iniciado sesión)
  */
 const protegerRuta = catchAsync(async (req, res, next) => {
+
   // 1. Obtener el token de las cabeceras de la petición (Headers)
   let token;
 
@@ -26,11 +28,28 @@ const protegerRuta = catchAsync(async (req, res, next) => {
   // Usamos promisify para poder usar 'await' con jwt.verify
   const decodificado = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
-  // 3. Si el token es válido, guardamos los datos del usuario en la petición (req)
-  // Recuerda que en nuestro authController guardamos id_usuario e id_rol dentro del token.
-  req.usuario = decodificado;
+  // Dentro de tu función protegerRuta...
+  
+  console.log('🛑 [DEBUG] MIDDLEWARE: A punto de buscar al usuario del token...');
+  // 3. LA DEFENSA SENIOR: Verificamos si el usuario aún existe en MySQL
+  // 'decodificado.id' es la variable que guardamos al firmar el token en authController
+  const sql = `SELECT * FROM usuarios WHERE id_usuario = ?`;
+  const [usuarios] = await db.execute(sql, [decodificado.id]);
 
-  // 4. Todo está en orden, le decimos a Express que continúe hacia el controlador
+  if (usuarios.length === 0) {
+    return next(new AppError('El usuario asociado a este token ya no existe.', httpStatus.UNAUTHORIZED));
+  }
+
+  const usuario = usuarios[0];
+
+  // 4. Verificamos que el usuario no haya sido inhabilitado (Estado 1 = Activo)
+  if (usuario.estado !== 1) {
+    return next(new AppError('Tu cuenta ha sido inhabilitada. Contacta al administrador.', httpStatus.UNAUTHORIZED));
+  }
+
+  // 5. Todo está perfecto. Guardamos toda la información fresca de la BD en la petición
+  req.usuario = usuario;
+
   next();
 });
 
@@ -41,7 +60,8 @@ const protegerRuta = catchAsync(async (req, res, next) => {
 const restringirA = (...rolesPermitidos) => {
   // Retornamos la función middleware real
   return (req, res, next) => {
-    // req.usuario.id_rol viene del middleware 'protegerRuta' que se ejecutó justo antes
+    // Como en protegerRuta le inyectamos toda la fila de la BD a req.usuario,
+    // podemos leer la columna 'id_rol' con total seguridad.
     if (!rolesPermitidos.includes(req.usuario.id_rol)) {
       // Si el rol del usuario no está en la lista de permitidos, lanzamos error 403 (Prohibido)
       return next(new AppError('No tienes permiso para realizar esta acción.', httpStatus.FORBIDDEN));

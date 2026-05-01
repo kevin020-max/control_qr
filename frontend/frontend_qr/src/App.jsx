@@ -5,7 +5,6 @@ import Dashboard from './pages/Dashboard';
 import RutaProtegida from './components/RutaProtegida';
 import Escaner from './pages/Escaner';
 import Visitantes from './pages/Visitantes';
-// 1. Aquí ya tienes importado correctamente tu nuevo componente
 import DashboardInicio from './pages/DashboardInicio';
 
 function App() {

@@ -1,6 +1,5 @@
 const express = require('express');
 const controlAccesoController = require('../controllers/controlAccesoController');
-// Importamos nuestro guardia de seguridad (Middlewares)
 const authMiddleware = require('../middlewares/authMiddleware');
 
 const router = express.Router();
