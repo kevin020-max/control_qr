@@ -9,46 +9,40 @@ const db = require('../config/conexion_db');
  * Middleware 1: Verificar que el usuario tenga un Token válido (Haber iniciado sesión)
  */
 const protegerRuta = catchAsync(async (req, res, next) => {
-
-  // 1. Obtener el token de las cabeceras de la petición (Headers)
+  // 1. Obtener el token de los headers (Ya lo debes tener programado)
   let token;
-
-  // El estándar web dice que el token se envía en la cabecera 'Authorization' con la palabra 'Bearer ' antes.
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-    // Separamos "Bearer" del token real y nos quedamos con el token (posición 1 del arreglo)
     token = req.headers.authorization.split(' ')[1];
   }
 
-  // Si no hay token, bloqueamos el acceso inmediatamente
   if (!token) {
-    return next(new AppError('No has iniciado sesion. Por favor, inicia sesion para acceder', httpStatus.UNAUTHORIZED));
+    return next(new AppError('No has iniciado sesión. Por favor inicia sesión para obtener acceso.', 401));
   }
 
-  // 2. Verificar si el token es válido y no ha sido alterado
-  // Usamos promisify para poder usar 'await' con jwt.verify
+  // 2. Verificar si el token es válido y extraer lo que guardamos en él (ej: el id_usuario o numero_documento)
   const decodificado = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
-  // Dentro de tu función protegerRuta...
-  
-  console.log('🛑 [DEBUG] MIDDLEWARE: A punto de buscar al usuario del token...');
-  // 3. LA DEFENSA SENIOR: Verificamos si el usuario aún existe en MySQL
-  // 'decodificado.id' es la variable que guardamos al firmar el token en authController
-  const sql = `SELECT * FROM usuarios WHERE id_usuario = ?`;
+  // 3. LA CLAVE DEL ÉXITO: Buscar al usuario COMPLETO en la base de datos
+  // IMPORTANTE: Asegúrate de que estás buscando por el dato correcto que guardaste en el token.
+  // Si tu token guarda el numero_documento, cambia la consulta a WHERE numero_documento = ?
+  const sql = 'SELECT * FROM usuarios WHERE id_usuario = ?'; 
   const [usuarios] = await db.execute(sql, [decodificado.id]);
 
   if (usuarios.length === 0) {
-    return next(new AppError('El usuario asociado a este token ya no existe.', httpStatus.UNAUTHORIZED));
+    return next(new AppError('El usuario que pertenece a este token ya no existe.', 401));
   }
 
   const usuario = usuarios[0];
 
-  // 4. Verificamos que el usuario no haya sido inhabilitado (Estado 1 = Activo)
-  if (usuario.estado !== 1) {
-    return next(new AppError('Tu cuenta ha sido inhabilitada. Contacta al administrador.', httpStatus.UNAUTHORIZED));
+  // 4. El Candado de Soft Delete (Que agregamos antes)
+  if (usuario.estado === 2) {
+    return next(new AppError('Tu cuenta ha sido desactivada por un administrador. Acceso denegado.', 401));
   }
 
-  // 5. Todo está perfecto. Guardamos toda la información fresca de la BD en la petición
-  req.usuario = usuario;
+  // 5. LA INYECCIÓN MÁGICA
+  // Aquí le inyectamos a la petición TODOS los datos de la base de datos (incluyendo id_rol).
+  // Así, cuando pase al siguiente middleware (restringirA), tendrá la información completa.
+  req.usuario = usuario; 
 
   next();
 });
@@ -62,9 +56,9 @@ const restringirA = (...rolesPermitidos) => {
   return (req, res, next) => {
     // Como en protegerRuta le inyectamos toda la fila de la BD a req.usuario,
     // podemos leer la columna 'id_rol' con total seguridad.
+    // 3. Evaluamos estrictamente
     if (!rolesPermitidos.includes(req.usuario.id_rol)) {
-      // Si el rol del usuario no está en la lista de permitidos, lanzamos error 403 (Prohibido)
-      return next(new AppError('No tienes permiso para realizar esta acción.', httpStatus.FORBIDDEN));
+      return next(new AppError('No tienes permiso para realizar esta acción.', 403));
     }
 
     //Si tiene permiso continuamos

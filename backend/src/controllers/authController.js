@@ -39,6 +39,12 @@ const login = catchAsync(async (req, res, next) => {
     return next(new AppError('Número de documento o contraseña incorrectos', httpStatus.UNAUTHORIZED));
   }
 
+    // estado 2 significa desactivado, estado 1 significa activo.
+    if (usuarioEncontrado.estado === 2) {
+      // Retornamos un error 403 (Forbidden / Prohibido)
+      return next(new AppError('Tu cuenta ha sido desactivada. Comunícate con el administrador del sistema.', 403));
+    }
+
   //Generar el token JWT
   const token = firmarToken(usuarioEncontrado.id_usuario, usuarioEncontrado.id_rol)
 

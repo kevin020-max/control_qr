@@ -63,6 +63,86 @@ const crearUsuarioInterno = catchAsync(async (req, res, next) => {
   });
 });
 
+// Controlador para obtener la lista de usuarios con sus roles y datos personales
+const obtenerUsuarios = catchAsync(async (req, res, next) => {
+  //Usamos INNER JOIN para combinar 3 tablas en una sola consulta.
+  //Así el Frontend recibe el nombre real del rol y de la persona, no solo números.
+  const sql = `
+    SELECT
+      u.id_usuario,
+      u.estado,
+      p.numero_documento,
+      p.nombres,
+      p.apellidos,
+      r.nombre_rol
+    FROM usuarios u
+    INNER JOIN personas p ON u.numero_documento = p.numero_documento
+    INNER JOIN roles r ON u.id_rol = r.id_rol
+  `;
+
+  const [usuarios] = await db.execute(sql);
+
+  res.status(httpStatus.OK).json({
+    status: 'success',
+    resultados: usuarios.length,
+    data: usuarios
+  });
+});
+
+// Controlador para actualizar el rol de un usuario específico (solo el rol, no otros datos)
+const actualizarRolUsuario = catchAsync(async (req, res, next) => {
+  // Extraemos el ID de la URL (ej: /api/usuarios/5)
+  const { id } = req.params; 
+  // Extraemos el nuevo rol que envía el frontend en el body
+  const { id_rol } = req.body;
+
+  if (!id_rol) {
+    return next(new AppError('Debes proporcionar un nuevo rol válido.', httpStatus.BAD_REQUEST));
+  }
+
+  // Actualizamos únicamente el campo id_rol
+  const sql = 'UPDATE usuarios SET id_rol = ? WHERE id_usuario = ?';
+  const [resultado] = await db.execute(sql, [id_rol, id]);
+
+  // Si affectedRows es 0, significa que el id_usuario no existe en la BD
+  if (resultado.affectedRows === 0) {
+    return next(new AppError('No se encontró ningún usuario con ese ID.', httpStatus.NOT_FOUND));
+  }
+
+  res.status(httpStatus.OK).json({
+    status: 'success',
+    message: 'Rol de usuario actualizado correctamente.'
+  });
+});
+
+// Controlador para eliminar un usuario (cambiar su estado a inactivo)
+const cambiarEstadoUsuario = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  const { estado } = req.body; // El frontend enviará 1 (Activar) o 2 (Desactivar)
+
+  // Validamos que el estado sea estrictamente 1 o 2
+  if (estado !== 1 && estado !== 2) {
+    return next(new AppError('El estado debe ser 1 (Activo) o 2 (Inactivo).', httpStatus.BAD_REQUEST));
+  }
+
+  const sql = 'UPDATE usuarios SET estado = ? WHERE id_usuario = ?';
+  const [resultado] = await db.execute(sql, [estado, id]);
+
+  if (resultado.affectedRows === 0) {
+    return next(new AppError('No se encontró ningún usuario con ese ID.', httpStatus.NOT_FOUND));
+  }
+
+  const mensaje = estado === 1 ? 'Usuario activado exitosamente.' : 'Usuario desactivado del sistema.';
+
+  res.status(httpStatus.OK).json({
+    status: 'success',
+    message: mensaje
+  });
+});
+
 module.exports = {
-  crearUsuarioInterno
+  crearUsuarioInterno,
+  obtenerUsuarios,
+  actualizarRolUsuario,
+  cambiarEstadoUsuario
 };

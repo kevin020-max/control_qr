@@ -15,28 +15,41 @@ const Login = () => {
   // 2. FUNCIÓN DE ENVÍO: Se ejecuta al hacer clic en "Ingresar"
   const manejarSubmit = async (e) => {
     e.preventDefault(); // Evita que la página se recargue (comportamiento por defecto de HTML)
-    setErrorBackend(''); // Limpiamos cualquier error previo
+    setErrorBackend(''); // Limpiamos cualquier error previo para ocultar el cuadro rojo
+
+    // CORRECCIÓN 1: Creamos el objeto con los datos exactamente como los pide tu Backend
+    const datosLogin = {
+      numero_documento: Number(documento), // 'documento' viene de tu estado (useState)
+      contrasena: contrasena       // 'contrasena' viene de tu estado (useState)
+    };
 
     try {
-      // 3. ENVIAR AL BACKEND: Usamos nuestra ruta POST /auth/login
-      const respuesta = await api.post('/auth/login', {
-        numero_documento: Number(documento), 
-        contrasena: contrasena
-      });
-
-      // 4. ÉXITO: Extraemos el token que nos envió el backend (Ajusta la ruta si tu JSON es diferente)
-      // Dependiendo de cómo armaste el backend, puede ser respuesta.data.token o respuesta.data.data.token
-      const token = respuesta.data.token || respuesta.data.data.token; 
+      // CORRECCIÓN 2: Usamos tu herramienta 'api' en lugar de 'axios'.
+      // Como 'api' ya tiene la URL base configurada, solo ponemos el final de la ruta.
+      const respuesta = await api.post('/auth/login', datosLogin);
       
-      // Guardamos la llave maestra en el navegador
+      // 1. Guardamos el token y los datos del usuario en el "bolsillo" del navegador
+      const { token, data } = respuesta.data;
       localStorage.setItem('token', token);
+      localStorage.setItem('usuario', JSON.stringify(data.usuario));
 
-      // ¡Le abrimos la puerta al usuario! Lo enviamos al dashboard
-      navigate('/dashboard');
+      // 2. Leemos el id_rol para saber a dónde mandarlo
+      const id_rol = data.usuario.id_rol;
+
+      // 3. Redirección inteligente usando el hook useNavigate()
+      // Si es Administrador (1) O si es Operario (2), ambos van a la misma plantilla
+      if (id_rol === 1 || id_rol === 2) {
+        navigate('/dashboard'); 
+      } else {
+        navigate('/reportes'); // Instructores (3) y Coordinadores (4) van a reportes
+      }
 
     } catch (error) {
-      // 5. ERROR: Si el backend dice "Credenciales inválidas" (Status 400/401), lo mostramos en pantalla
-      const mensajeError = error.response?.data?.message || 'Hubo un error al intentar iniciar sesión.';
+      console.error("Error al iniciar sesión", error);
+      
+      // CORRECCIÓN 4: Atrapamos el mensaje de error EXACTO que envía nuestro Backend 
+      // (ej. "Usuario o contraseña incorrectos") y lo mostramos en pantalla
+      const mensajeError = error.response?.data?.message || 'Error al conectar con el servidor';
       setErrorBackend(mensajeError);
     }
   };

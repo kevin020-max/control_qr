@@ -25,9 +25,10 @@ app.use(morgan('dev'));
 
 // Configuramos CORS para permitir que React (que está en otro puerto) pueda consumir nuestra API
 app.use(cors({
-  origin: '*', // En producción, aquí pondremos la URL exacta de tu React (ej: 'https://mi-dominio.com')
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
+  origin: 'http://localhost:5173', // En producción, aquí pondremos la URL exacta de tu React (ej: 'https://mi-dominio.com')
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // Este middleware es VITAL para React: permite que el backend entienda el JSON que le envía Axios
