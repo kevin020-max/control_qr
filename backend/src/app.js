@@ -11,6 +11,7 @@ const controlAccesoRoutes = require('./routes/controlAccesoRoutes');
 const visitanteRoutes = require('./routes/visitanteRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const usuarioRoutes = require('./routes/usuarioRoutes');
+const aprendizRoutes = require('./routes/aprendizRoutes');
 
 // Inicializamos la aplicación de Express
 const app = express();
@@ -47,6 +48,7 @@ app.use('/api/accesos', controlAccesoRoutes);
 app.use('/api/visitantes', visitanteRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/usuarios', usuarioRoutes);
+app.use('/api/aprendices', aprendizRoutes);
 
 // 3. MANEJO DE RUTAS NO ENCONTRADAS (Si React pide una URL que no existe)
 // Cambiamos app.all('*') por app.use() para compatibilidad con Express 5

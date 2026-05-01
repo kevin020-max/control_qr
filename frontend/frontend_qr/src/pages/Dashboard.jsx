@@ -1,6 +1,6 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 // 1. Importamos dos íconos nuevos para las funciones del Administrador
-import { FaQrcode, FaUserPlus, FaSignOutAlt, FaHome, FaFileUpload, FaUserCog, FaChartBar, FaUser } from 'react-icons/fa';
+import { FaQrcode, FaUserPlus, FaSignOutAlt, FaHome, FaFileUpload, FaUserCog, FaChartBar, FaUser, FaUserGraduate } from 'react-icons/fa';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -59,6 +59,9 @@ const Dashboard = () => {
               </Link>
               <Link to="/dashboard/gestion-usuarios" style={estilos.link}>
                 <FaUser style={estilos.icono} /> Gestionar Usuarios
+              </Link>
+              <Link to="/dashboard/gestion-aprendices" style={estilos.link}>
+                <FaUserGraduate style={estilos.icono} /> Gestionar Aprendices
               </Link>
               {/* NUEVO BOTÓN: Enlace a la página externa de reportes */}
               <Link to="/reportes" style={estilos.link}>

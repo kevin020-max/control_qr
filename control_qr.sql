@@ -136,3 +136,9 @@ INSERT INTO rol_permiso (id_rol, id_permiso) VALUES
 (2, 1), (2, 2),                 -- Operario/Guarda escanea y registra visitantes
 (3, 4),                         -- Instructor ve reportes
 (4, 4);                         -- Coordinador ve reportes
+
+-- Insertamos un par de programas de formación (Fichas) de prueba para ADSO
+INSERT INTO ficha (numero_ficha, nombre) VALUES 
+('2758231', 'Análisis y Desarrollo de Software (Jornada Mañana)'),
+('2801923', 'Análisis y Desarrollo de Software (Jornada Tarde)'),
+('2910293', 'Sistemas e Informática (Fines de Semana)');

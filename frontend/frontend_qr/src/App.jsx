@@ -12,6 +12,7 @@ import Escaner from './pages/Escaner';
 import Visitantes from './pages/Visitantes';
 import CargaMasiva from './pages/CargaMasiva';
 import CrearUsuario from './pages/CrearUsuario';
+import GestionAprendices from './pages/GestionAprendices';
 
 // NUEVAS páginas para los otros roles
 import Reportes from './pages/Reportes';
@@ -43,6 +44,7 @@ function App() {
               <Route path="carga-masiva" element={<CargaMasiva />} />
               <Route path="crear-usuario" element={<CrearUsuario />} />
               <Route path="gestion-usuarios" element={<GestionUsuarios />} />
+              <Route path="gestion-aprendices" element={<GestionAprendices />} />
             </Route>
           </Route>
           
