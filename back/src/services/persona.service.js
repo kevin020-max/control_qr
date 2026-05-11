@@ -7,40 +7,62 @@ import {
 // Limpia texto
 const limpiarTexto = (texto) => {
   if (!texto) return "";
-  return texto.toString().trim().toUpperCase();
+
+  return texto
+    .toString()
+    .trim()
+    .toUpperCase();
 };
 
 // Convierte documento a número
 const limpiarDocumento = (doc) => {
   if (!doc) return null;
+
   return parseInt(doc.toString().trim());
 };
 
-// Mapea estado
-const mapEstado = (estado) => {
-  if (!estado) return 2;
+// Estados válidos para aprendices activos
+const estadosValidosAprendiz = [
+  "EN FORMACION",
+  "CONDICIONADO",
+  "INDUCCION"
+];
 
-  const valor = estado.toString().trim().toUpperCase();
+// Valida si un estado es activo para aprendices
+const esEstadoActivoAprendiz = (estado) => {
+  const valor = limpiarTexto(estado);
 
-  if (valor === "EN FORMACION") {
-    return 1;
-  }
-
-  return 2;
+  return estadosValidosAprendiz.includes(valor);
 };
 
 export const guardarOActualizarPersona = async (data) => {
+
+  let tipo_estado = 1;
+
+  // Aprendices
+  if (data.tipo_persona === 1) {
+
+    const activo = esEstadoActivoAprendiz(data.estado);
+
+    tipo_estado = activo ? 1 : 2;
+  }
+
+  // Instructores y funcionarios siempre activos
+  if (
+    data.tipo_persona === 2 ||
+    data.tipo_persona === 3
+  ) {
+    tipo_estado = 1;
+  }
+
   const persona = {
     tipo_doc: limpiarTexto(data.tipo_doc),
     numero_documento: limpiarDocumento(data.numero_documento),
     nombres: limpiarTexto(data.nombres),
     apellidos: limpiarTexto(data.apellidos),
-    tipo_persona: data.tipo_persona || 1,
-    tipo_estado: mapEstado(data.estado),
-    id_ficha: data.id_ficha || null,
-
-    // Fecha actual automática
-    fecha_registro: new Date().toISOString().split("T")[0]
+    tipo_persona: data.tipo_persona,
+    tipo_estado,
+    id_ficha: data.id_ficha || null
   };
 
   if (!persona.numero_documento) {
@@ -50,13 +72,31 @@ export const guardarOActualizarPersona = async (data) => {
     };
   }
 
-  const existe = await findPersonaByDocumento(persona.numero_documento);
+  const existe = await findPersonaByDocumento(
+    persona.numero_documento
+  );
 
+  // Si ya existe  se actualiza
   if (existe) {
+
     await updatePersona(persona);
+
     return {
       status: "actualizado",
       documento: persona.numero_documento
+    };
+  }
+
+
+  // SOLO insertar aprendices activos
+  if (
+    persona.tipo_persona === 1 &&
+    persona.tipo_estado === 2
+  ) {
+    return {
+      status: "omitido",
+      documento: persona.numero_documento,
+      mensaje: "Aprendiz no activo"
     };
   }
 

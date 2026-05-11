@@ -27,10 +27,6 @@ router.post("/funcionarios", upload.single("archivo"), (req, res) => {
     subirArchivoController(req, res);
 });
 
-// Visitantes
-router.post("/visitantes", upload.single("archivo"), (req, res) => {
-    req.tipo_persona = 4;
-    subirArchivoController(req, res);
-});
+
 
 export default router;
