@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
-import { FaUserFriends, FaSignInAlt, FaSignOutAlt, FaUserPlus, FaRegClock } from 'react-icons/fa';
+import { Link, useNavigate, Outlet, useLocation } from 'react-router-dom';
+import { FaUserFriends, FaSignInAlt, FaSignOutAlt, FaUserPlus, FaRegClock, FaHome, FaFileUpload, FaUserCog, FaChartBar, FaUser, FaUserGraduate } from 'react-icons/fa';
 import api from '../services/api';
+import logoSena from '../assets/logoSena.png';
+import '../styles/DashboardInicio.css'
 
 const DashboardInicio = () => {
   // 2. ESTADO INICIAL
@@ -49,17 +52,104 @@ const DashboardInicio = () => {
     return roles[tipo] || 'Otro';
   };
 
+  const navigate = useNavigate();
+
+  // 2. EXTRAER EL ROL DEL USUARIO
+  // Buscamos el "bolsillo" del navegador para saber quién inició sesión
+  const usuarioString = localStorage.getItem('usuario');
+  let id_rol = null;
+
+  // Si hay un usuario guardado, lo convertimos a objeto JavaScript y sacamos su rol
+  if (usuarioString) {
+    const usuario = JSON.parse(usuarioString);
+    id_rol = usuario.id_rol;
+  }
+
+  // Función para cerrar sesión
+  const cerrarSesion = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario'); // Es buena práctica borrar también al usuario
+    navigate('/login');
+  };
+
+  const location = useLocation();
+
+  // Esta variable será verdadera SOLO cuando estés en la raíz del dashboard
+  const esRutaInicio = location.pathname === '/dashboard' || location.pathname === '/dashboard/';
+
   // 5. RENDERIZADO DE LA INTERFAZ
   return (
-    <div style={estilos.contenedor}>
+    <div className='contenedor'>
       
       {/* --- CABECERA --- */}
-      <div style={estilos.cabecera}>
-        <h1 style={estilos.titulo}>Bienvenido al Sistema</h1> 
-        <p style={estilos.subtitulo}>{fechaHoy}</p>
-      </div>
+      <header>
+        <div className='logo-sena'>
+          <img src={logoSena} alt="Logo del SENA" />
+            <div className='titulos'>
+              <h1>SENA</h1>
+              <h2>Control de acceso</h2>
+            </div>
+        </div>
 
-      {/* --- BLOQUE 1: TARJETAS DE RESUMEN (KPIs) --- */}
+        <div className='logout'>
+          <div className='identidad'>
+            <h1>Admin SENA</h1>
+            <p>Administrador</p>
+          </div>
+          <button onClick={cerrarSesion} style={estilos.botonSalir}>Salir <FaSignOutAlt style={estilos.icono} /></button>
+        </div>
+      </header>
+
+      {/* --- SIDEBAR --- */}
+      <aside style={estilos.sidebar} className='sidebar'>
+        <div style={estilos.logoCaja}>
+          <h2 style={{ color: 'white', textAlign: 'center' }}>SENA QR</h2>
+        </div>
+
+        <nav style={estilos.menu}>
+          {/* BOTONES COMUNES: El inicio, el escáner y registrar visitante los ven el Admin y el Guarda */}
+          <Link to="/dashboard" style={estilos.link}>
+            <FaHome style={estilos.icono} /> Inicio
+          </Link>
+
+          {/* 3. LA MAGIA: RENDERIZADO CONDICIONAL */}
+          {/* El código dentro de estos paréntesis SOLO se dibujará si id_rol es exactamente 1 */}
+          {id_rol === 1 && (
+            <>
+              {/* Usamos un pequeño separador visual opcional */}
+              <hr style={{ borderColor: 'rgba(255,255,255,0.2)', margin: '15px 20px' }} />
+              
+              <Link to="/dashboard/carga-masiva" style={estilos.link}>
+                <FaFileUpload style={estilos.icono} /> Carga Masiva
+              </Link>
+              <Link to="/dashboard/crear-usuario" style={estilos.link}>
+                <FaUserCog style={estilos.icono} /> Crear Usuario
+              </Link>
+              <Link to="/dashboard/gestion-usuarios" style={estilos.link}>
+                <FaUser style={estilos.icono} /> Gestionar Usuarios
+              </Link>
+              <Link to="/dashboard/gestion-aprendices" style={estilos.link}>
+                <FaUserGraduate style={estilos.icono} /> Gestionar Aprendices
+              </Link>
+              {/* NUEVO BOTÓN: Enlace a la página externa de reportes */}
+              <Link to="/reportes" style={estilos.link}>
+                <FaChartBar style={estilos.icono} /> Ver Reportes
+              </Link>
+            </>
+          )}
+        </nav>
+      </aside>
+
+      {/* --- ÁREA DE CONTENIDO PRINCIPAL --- */}
+<main style={estilos.contenido}>
+  <Outlet /> 
+  
+  {/* LA MAGIA: Si la ruta es exactamente /dashboard, muestra las tarjetas. 
+      Si entras a /dashboard/visitantes, esRutaInicio será false y esto se ocultará */}
+  
+  {esRutaInicio && (
+    <>
+      {/* --- BLOQUE 1: TARJETAS DE RESUMEN --- */}
       <div style={estilos.gridTarjetas}>
         <div style={estilos.tarjeta}>
           <div>
@@ -91,7 +181,7 @@ const DashboardInicio = () => {
         </div>
       </div>
 
-      {/* --- BLOQUE 2: LISTA DE VISITANTES ACTIVOS (Tema Naranja) --- */}
+      {/* --- BLOQUE 2: LISTA DE VISITANTES --- */}
       <div style={estilos.seccionListas}>
         <div style={estilos.cabeceraLista}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -126,7 +216,7 @@ const DashboardInicio = () => {
         </div>
       </div>
 
-      {/* --- BLOQUE 3: REGISTROS RECIENTES APRENDICES/INSTRUCTORES (Tema Blanco) --- */}
+      {/* --- BLOQUE 3: OTROS REGISTROS --- */}
       <div style={estilos.seccionListas}>
         <div style={estilos.cabeceraLista}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -167,7 +257,9 @@ const DashboardInicio = () => {
           )}
         </div>
       </div>
-
+    </>
+  )}
+</main>
     </div>
   );
 };
@@ -175,8 +267,6 @@ const DashboardInicio = () => {
 // 6. ESTILOS CSS EN LÍNEA
 const estilos = {
   // Estructura General
-  contenedor: { padding: '30px', backgroundColor: '#f8fafc', minHeight: '100vh' },
-  cabecera: { marginBottom: '30px' },
   titulo: { fontSize: '28px', color: '#0f172a', margin: '0 0 5px 0', fontWeight: 'bold' },
   subtitulo: { color: '#64748b', margin: 0, fontSize: '15px', textTransform: 'capitalize' },
   

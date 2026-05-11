@@ -1,4 +1,3 @@
-// src/pages/GestionAprendices.jsx
 import { useState, useEffect } from 'react';
 import api from '../services/api'; 
 import { FaUserGraduate, FaPlus, FaBan, FaCheckCircle } from 'react-icons/fa'; // Íconos para la UI

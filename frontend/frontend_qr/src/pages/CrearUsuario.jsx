@@ -1,4 +1,3 @@
-// src/pages/CrearUsuario.jsx
 import { useState } from 'react';
 import api from '../services/api'; // Tu instancia de Axios que envía el Token automáticamente
 

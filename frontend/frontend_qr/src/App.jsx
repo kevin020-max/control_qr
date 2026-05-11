@@ -1,9 +1,8 @@
-// src/App.jsx
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import './App.css';
 
 // Páginas de acceso y generales
 import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
 import DashboardInicio from './pages/DashboardInicio';
 import GestionUsuarios from './pages/GestionUsuarios';
 
@@ -34,8 +33,7 @@ function App() {
         <Route element={<RutaProtegida rolesPermitidos={[1, 2]} />}>
           
           {/* El Dashboard actúa como la plantilla (Layout) base para este grupo */}
-          <Route path="/dashboard" element={<Dashboard />}>
-            <Route index element={<DashboardInicio />} />
+          <Route path="/dashboard" element={<DashboardInicio />}>
             <Route path="escaner" element={<Escaner />} />
             <Route path="visitantes" element={<Visitantes />} />
 

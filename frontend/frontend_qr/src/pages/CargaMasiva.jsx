@@ -1,4 +1,3 @@
-// src/pages/CargaMasiva.jsx
 const CargaMasiva = () => {
   return (
     <div style={{ padding: '20px' }}>

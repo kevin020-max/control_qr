@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaIdCard, FaLock } from 'react-icons/fa'; // Íconos para los inputs
-import api from '../services/api'; // Nuestra herramienta Axios configurada
+import api from '../services/api';
 
 const Login = () => {
   // 1. ESTADOS: Guardan la información que el usuario teclea en tiempo real
