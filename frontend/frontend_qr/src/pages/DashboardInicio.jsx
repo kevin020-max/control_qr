@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, Outlet, useLocation } from 'react-router-dom';
-import { FaUserFriends, FaSignInAlt, FaSignOutAlt, FaUserPlus, FaRegClock, FaHome, FaFileUpload, FaUserCog, FaChartBar, FaUser, FaUserGraduate } from 'react-icons/fa';
+import { FaUserFriends, FaSignInAlt, FaSignOutAlt, FaUserPlus, FaRegClock, FaHome, FaQrcode, FaFileUpload, FaUserCog, FaChartBar, FaUser, FaUserGraduate } from 'react-icons/fa';
 import api from '../services/api';
 import logoSena from '../assets/logoSena.png';
 import '../styles/DashboardInicio.css'
@@ -79,9 +79,8 @@ const DashboardInicio = () => {
 
   // 5. RENDERIZADO DE LA INTERFAZ
   return (
-    <div className='contenedor'>
-      
-      {/* --- CABECERA --- */}
+    <>
+    {/* --- CABECERA --- */}
       <header>
         <div className='logo-sena'>
           <img src={logoSena} alt="Logo del SENA" />
@@ -96,21 +95,31 @@ const DashboardInicio = () => {
             <h1>Admin SENA</h1>
             <p>Administrador</p>
           </div>
-          <button onClick={cerrarSesion} style={estilos.botonSalir}>Salir <FaSignOutAlt style={estilos.icono} /></button>
+          <button onClick={cerrarSesion} style={estilos.botonSalir}>Salir <FaSignOutAlt className='icono-link' /></button>
         </div>
       </header>
+    <div className='contenedor'>
 
       {/* --- SIDEBAR --- */}
-      <aside style={estilos.sidebar} className='sidebar'>
-        <div style={estilos.logoCaja}>
-          <h2 style={{ color: 'white', textAlign: 'center' }}>SENA QR</h2>
-        </div>
+      <aside>
 
-        <nav style={estilos.menu}>
+        <nav className='menu'>
           {/* BOTONES COMUNES: El inicio, el escáner y registrar visitante los ven el Admin y el Guarda */}
-          <Link to="/dashboard" style={estilos.link}>
-            <FaHome style={estilos.icono} /> Inicio
+          <Link to="/dashboard" className='link'>
+            <FaHome className='icono-link' /> Inicio
           </Link>
+
+          
+          {id_rol === 2 && (
+            <>
+            <Link to="/dashboard/escaner" className='link'>
+              <FaQrcode className='icono-link' /> Escáner QR
+            </Link>
+            <Link to="/dashboard/visitantes" className='link'>
+              <FaUserPlus className='icono-link' /> Registrar Visitante
+            </Link>
+          </>
+          )}
 
           {/* 3. LA MAGIA: RENDERIZADO CONDICIONAL */}
           {/* El código dentro de estos paréntesis SOLO se dibujará si id_rol es exactamente 1 */}
@@ -118,30 +127,34 @@ const DashboardInicio = () => {
             <>
               {/* Usamos un pequeño separador visual opcional */}
               <hr style={{ borderColor: 'rgba(255,255,255,0.2)', margin: '15px 20px' }} />
-              
-              <Link to="/dashboard/carga-masiva" style={estilos.link}>
-                <FaFileUpload style={estilos.icono} /> Carga Masiva
+
+              <Link to="/dashboard/carga-masiva" className='link'>
+                <FaFileUpload className='icono-link' /> Carga Masiva
               </Link>
-              <Link to="/dashboard/crear-usuario" style={estilos.link}>
-                <FaUserCog style={estilos.icono} /> Crear Usuario
+              <Link to="/dashboard/crear-usuario" className='link'>
+                <FaUserCog className='icono-link' /> Crear Usuario
               </Link>
-              <Link to="/dashboard/gestion-usuarios" style={estilos.link}>
-                <FaUser style={estilos.icono} /> Gestionar Usuarios
+              <Link to="/dashboard/gestion-usuarios" className='link'>
+                <FaUser className='icono-link' /> Gestionar Usuarios
               </Link>
-              <Link to="/dashboard/gestion-aprendices" style={estilos.link}>
-                <FaUserGraduate style={estilos.icono} /> Gestionar Aprendices
-              </Link>
-              {/* NUEVO BOTÓN: Enlace a la página externa de reportes */}
-              <Link to="/reportes" style={estilos.link}>
-                <FaChartBar style={estilos.icono} /> Ver Reportes
+              <Link to="/dashboard/gestion-aprendices" className='link'>
+                <FaUserGraduate className='icono-link' /> Gestionar Aprendices
               </Link>
             </>
+          )}
+
+          {id_rol === 1 && 3 && 4 &&  (
+            <>
+              <Link to="/reportes" className='link'>
+                  <FaChartBar className='icono-link' /> Ver Reportes
+              </Link>
+          </>
           )}
         </nav>
       </aside>
 
       {/* --- ÁREA DE CONTENIDO PRINCIPAL --- */}
-<main style={estilos.contenido}>
+<main className='contenido'>
   <Outlet /> 
   
   {/* LA MAGIA: Si la ruta es exactamente /dashboard, muestra las tarjetas. 
@@ -150,7 +163,7 @@ const DashboardInicio = () => {
   {esRutaInicio && (
     <>
       {/* --- BLOQUE 1: TARJETAS DE RESUMEN --- */}
-      <div style={estilos.gridTarjetas}>
+      <div className='grid-tarjetas'>
         <div style={estilos.tarjeta}>
           <div>
             <p style={estilos.tituloTarjeta}>Personas Activas</p>
@@ -261,6 +274,7 @@ const DashboardInicio = () => {
   )}
 </main>
     </div>
+    </>
   );
 };
 
