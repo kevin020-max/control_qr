@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate, Outlet, useLocation } from 'react-router-dom';
-import { FaUserFriends, FaSignInAlt, FaSignOutAlt, FaUserPlus, FaRegClock, FaHome, FaQrcode, FaFileUpload, FaUserCog, FaChartBar, FaUser, FaUserGraduate } from 'react-icons/fa';
+import { Link, useNavigate, Outlet, useLocation, NavLink } from 'react-router-dom';
+import { FaUserFriends, FaSignInAlt, FaSignOutAlt, FaUserPlus, FaHome, FaQrcode, FaFileUpload, FaUserCog, FaChartBar, FaUser, FaUserGraduate } from 'react-icons/fa';
 import api from '../services/api';
 import logoSena from '../assets/logoSena.png';
 import '../styles/DashboardInicio.css'
@@ -105,19 +105,19 @@ const DashboardInicio = () => {
 
         <nav className='menu'>
           {/* BOTONES COMUNES: El inicio, el escáner y registrar visitante los ven el Admin y el Guarda */}
-          <Link to="/dashboard" className='link'>
+          <NavLink to="/dashboard" className='link' end>
             <FaHome className='icono-link' /> Inicio
-          </Link>
+          </NavLink>
 
           
           {id_rol === 2 && (
             <>
-            <Link to="/dashboard/escaner" className='link'>
+            <NavLink to="/dashboard/escaner" className='link'>
               <FaQrcode className='icono-link' /> Escáner QR
-            </Link>
-            <Link to="/dashboard/visitantes" className='link'>
+            </NavLink>
+            <NavLink to="/dashboard/visitantes" className='link'>
               <FaUserPlus className='icono-link' /> Registrar Visitante
-            </Link>
+            </NavLink>
           </>
           )}
 
@@ -125,29 +125,26 @@ const DashboardInicio = () => {
           {/* El código dentro de estos paréntesis SOLO se dibujará si id_rol es exactamente 1 */}
           {id_rol === 1 && (
             <>
-              {/* Usamos un pequeño separador visual opcional */}
-              <hr style={{ borderColor: 'rgba(255,255,255,0.2)', margin: '15px 20px' }} />
-
-              <Link to="/dashboard/carga-masiva" className='link'>
+              <NavLink to="/dashboard/carga-masiva" className='link'>
                 <FaFileUpload className='icono-link' /> Carga Masiva
-              </Link>
-              <Link to="/dashboard/crear-usuario" className='link'>
+              </NavLink>
+              <NavLink to="/dashboard/crear-usuario" className='link'>
                 <FaUserCog className='icono-link' /> Crear Usuario
-              </Link>
-              <Link to="/dashboard/gestion-usuarios" className='link'>
+              </NavLink>
+              <NavLink to="/dashboard/gestion-usuarios" className='link'>
                 <FaUser className='icono-link' /> Gestionar Usuarios
-              </Link>
-              <Link to="/dashboard/gestion-aprendices" className='link'>
+              </NavLink>
+              <NavLink to="/dashboard/gestion-aprendices" className='link'>
                 <FaUserGraduate className='icono-link' /> Gestionar Aprendices
-              </Link>
+              </NavLink>
             </>
           )}
 
           {id_rol === 1 && 3 && 4 &&  (
             <>
-              <Link to="/reportes" className='link'>
+              <NavLink to="/reportes" className='link'>
                   <FaChartBar className='icono-link' /> Ver Reportes
-              </Link>
+              </NavLink>
           </>
           )}
         </nav>
@@ -162,83 +159,69 @@ const DashboardInicio = () => {
   
   {esRutaInicio && (
     <>
+    <div className='titulos-contenido'>
+      <h1>Bienvenido</h1>
+      <p>{fechaHoy}</p>
+    </div>
       {/* --- BLOQUE 1: TARJETAS DE RESUMEN --- */}
       <div className='grid-tarjetas'>
-        <div style={estilos.tarjeta}>
+        <div className='tarjeta'>
           <div>
-            <p style={estilos.tituloTarjeta}>Personas Activas</p>
-            <h2 style={estilos.numeroTarjeta}>{estadisticas.personasActivas}</h2>
+            <p className='titulo-tarjeta'>Personas Activas</p>
+            <h2 className='numero-tarjeta'>{estadisticas.personasActivas}</h2>
           </div>
-          <div style={{...estilos.cajaIcono, backgroundColor: '#dcfce7', color: '#16a34a'}}><FaUserFriends style={estilos.icono} /></div>
+          <div ><FaUserFriends className='icono'/></div>
         </div>
-        <div style={estilos.tarjeta}>
+        <div className='tarjeta'>
           <div>
-            <p style={estilos.tituloTarjeta}>Ingresos Hoy</p>
-            <h2 style={estilos.numeroTarjeta}>{estadisticas.ingresosHoy}</h2>
+            <p className='titulo-tarjeta'>Ingresos Hoy</p>
+            <h2 className='numero-tarjeta'>{estadisticas.ingresosHoy}</h2>
           </div>
-          <div style={{...estilos.cajaIcono, backgroundColor: '#dbeafe', color: '#2563eb'}}><FaSignInAlt style={estilos.icono} /></div>
+          <div ><FaSignInAlt className='icono'/></div>
         </div>
-        <div style={estilos.tarjeta}>
+        <div className='tarjeta'>
           <div>
-            <p style={estilos.tituloTarjeta}>Salidas Hoy</p>
-            <h2 style={estilos.numeroTarjeta}>{estadisticas.salidasHoy}</h2>
+            <p className='titulo-tarjeta'>Salidas Hoy</p>
+            <h2 className='numero-tarjeta'>{estadisticas.salidasHoy}</h2>
           </div>
-          <div style={{...estilos.cajaIcono, backgroundColor: '#ffedd5', color: '#ea580c'}}><FaSignOutAlt style={estilos.icono} /></div>
+          <div ><FaSignOutAlt className='icono'/></div>
         </div>
-        <div style={estilos.tarjeta}>
+        <div className='tarjeta'>
           <div>
-            <p style={estilos.tituloTarjeta}>Visitantes Hoy</p>
-            <h2 style={estilos.numeroTarjeta}>{estadisticas.visitantesHoy}</h2>
+            <p className='titulo-tarjeta'>Visitantes Hoy</p>
+            <h2 className='numero-tarjeta'>{estadisticas.visitantesHoy}</h2>
           </div>
-          <div style={{...estilos.cajaIcono, backgroundColor: '#f3e8ff', color: '#9333ea'}}><FaUserPlus style={estilos.icono} /></div>
+          <div ><FaUserPlus className='icono'/></div>
         </div>
       </div>
 
-      {/* --- BLOQUE 2: LISTA DE VISITANTES --- */}
-      <div style={estilos.seccionListas}>
-        <div style={estilos.cabeceraLista}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <FaRegClock style={{ color: '#ea580c', fontSize: '20px' }} />
-            <h3 style={estilos.tituloLista}>Visitantes Activos</h3>
-          </div>
-          <span style={estilos.textoSecundario}>QR Temporal</span>
-        </div>
+    <div className='actividad-reciente'>
+      <h2>Actividad reciente</h2>
 
-        <div style={estilos.contenedorLista}>
+      {/* --- BLOQUE 2: LISTA DE VISITANTES --- */}
+
           {estadisticas.listaVisitantes.length > 0 ? (
             estadisticas.listaVisitantes.map((visitante, index) => (
-              <div key={index} style={estilos.itemVisitante}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                  <div style={estilos.iconoEntrada}>
-                    <FaSignInAlt />
+              <div key={index}>
+                <div className='item-lista'>
+                  <div className='caja-icono'>
+                    <FaSignInAlt className='icono-lista'/>
                   </div>
                   <div>
                     <h4 style={estilos.nombrePersona}>{visitante.nombres} {visitante.apellidos}</h4>
                     <p style={estilos.textoSecundario}>Entrada • {extraerHora(visitante.fecha_entrada)}</p>
                     <p style={estilos.textoMotivo}>{visitante.observacion}</p>
+                    <p style={estilos.textoExpiracion}>Expira: {extraerHora(visitante.fecha_expiracion)}</p>
                   </div>
-                </div>
-                <div style={estilos.cajaExpiracion}>
-                  <p style={estilos.textoExpiracion}>Expira: {extraerHora(visitante.fecha_expiracion)}</p>
                 </div>
               </div>
             ))
           ) : (
             <p style={estilos.mensajeVacio}>No hay visitantes activos en este momento.</p>
           )}
-        </div>
-      </div>
 
       {/* --- BLOQUE 3: OTROS REGISTROS --- */}
-      <div style={estilos.seccionListas}>
-        <div style={estilos.cabeceraLista}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <h3 style={estilos.tituloLista}>Otros Registros Recientes</h3>
-          </div>
-          <span style={estilos.textoSecundario}>Comunidad Educativa</span>
-        </div>
 
-        <div style={estilos.contenedorLista}>
           {estadisticas.registrosRecientes.length > 0 ? (
             estadisticas.registrosRecientes.map((registro, index) => {
               // Lógica para saber si la fila es una entrada o una salida
@@ -247,20 +230,18 @@ const DashboardInicio = () => {
               const tipoRegistro = esSalida ? 'Salida' : 'Entrada';
 
               return (
-                <div key={index} style={estilos.itemRegistroNormal}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                    <div style={esSalida ? estilos.iconoSalida : estilos.iconoEntrada}>
-                      {esSalida ? <FaSignOutAlt /> : <FaSignInAlt />}
+                <div key={index}>
+                  <div className='item-lista'>
+                    <div className='caja-icono' style={esSalida ? estilos.iconoSalida : estilos.iconoEntrada}>
+                      {esSalida ? <FaSignOutAlt className='icono-lista' /> : <FaSignInAlt className='icono-lista' />}
                     </div>
                     <div>
                       <h4 style={estilos.nombrePersona}>{registro.nombres} {registro.apellidos}</h4>
                       <p style={estilos.textoMotivo}>
                         {obtenerNombreRol(registro.tipo_persona)} • {tipoRegistro}
+                        <p style={estilos.textoSecundario}>{horaMostrar}</p>
                       </p>
                     </div>
-                  </div>
-                  <div style={estilos.cajaExpiracion}>
-                    <p style={estilos.textoSecundario}><FaRegClock style={{marginRight: '5px'}}/> {horaMostrar}</p>
                   </div>
                 </div>
               );
@@ -269,7 +250,6 @@ const DashboardInicio = () => {
             <p style={estilos.mensajeVacio}>No hay registros recientes.</p>
           )}
         </div>
-      </div>
     </>
   )}
 </main>
@@ -280,39 +260,8 @@ const DashboardInicio = () => {
 
 // 6. ESTILOS CSS EN LÍNEA
 const estilos = {
-  // Estructura General
-  titulo: { fontSize: '28px', color: '#0f172a', margin: '0 0 5px 0', fontWeight: 'bold' },
-  subtitulo: { color: '#64748b', margin: 0, fontSize: '15px', textTransform: 'capitalize' },
-  
-  // Grid de Tarjetas (Bloque 1)
-  gridTarjetas: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '40px' },
-  tarjeta: { backgroundColor: 'white', padding: '20px', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' },
-  tituloTarjeta: { margin: '0 0 5px 0', fontSize: '13px', color: '#64748b' },
-  numeroTarjeta: { margin: 0, fontSize: '24px', fontWeight: 'bold', color: '#0f172a' },
-  cajaIcono: { width: '45px', height: '45px', borderRadius: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center' },
-  icono: { fontSize: '22px' },
 
   // Estilos comunes para las listas (Bloque 2 y 3)
-  seccionListas: { marginTop: '20px', marginBottom: '30px' },
-  cabeceraLista: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' },
-  tituloLista: { margin: 0, fontSize: '18px', color: '#0f172a', fontWeight: 'bold' },
-  contenedorLista: { display: 'flex', flexDirection: 'column', gap: '15px' },
-  nombrePersona: { margin: '0 0 3px 0', fontSize: '16px', color: '#0f172a', fontWeight: 'bold' },
-  textoSecundario: { margin: '0 0 3px 0', fontSize: '13px', color: '#64748b' },
-  textoMotivo: { margin: 0, fontSize: '13px', color: '#94a3b8' },
-  cajaExpiracion: { textAlign: 'right' },
-  textoExpiracion: { margin: 0, fontSize: '13px', color: '#64748b', fontWeight: 'bold' },
-  mensajeVacio: { textAlign: 'center', color: '#64748b', padding: '20px 0' },
-
-  // Diseño específico para Visitantes (Naranja)
-  itemVisitante: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#fff7ed', border: '1px solid #fed7aa', padding: '15px', borderRadius: '10px' },
-  
-  // Diseño específico para Registros Normales (Blanco)
-  itemRegistroNormal: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'white', border: '1px solid #e2e8f0', padding: '15px', borderRadius: '10px' },
-  
-  // Cajas de íconos para Entradas y Salidas en las listas
-  iconoEntrada: { backgroundColor: '#dcfce7', color: '#16a34a', width: '40px', height: '40px', borderRadius: '8px', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '18px' },
-  iconoSalida: { backgroundColor: '#ffedd5', color: '#ea580c', width: '40px', height: '40px', borderRadius: '8px', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '18px' }
 };
 
 export default DashboardInicio;
