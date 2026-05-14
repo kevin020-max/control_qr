@@ -30,7 +30,7 @@ function App() {
         
         {/* 1. GRUPO OPERARIO (Rol 2) Y ADMIN (Rol 1) */}
         {/* El Administrador también tiene permiso de ver esto por si necesita operar el escáner */}
-        <Route element={<RutaProtegida rolesPermitidos={[1, 2]} />}>
+        <Route element={<RutaProtegida rolesPermitidos={[1, 2, 3, 4]} />}>
           
           {/* El Dashboard actúa como la plantilla (Layout) base para este grupo */}
           <Route path="/dashboard" element={<DashboardInicio />}>

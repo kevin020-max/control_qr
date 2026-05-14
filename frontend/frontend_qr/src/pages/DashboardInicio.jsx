@@ -32,6 +32,11 @@ const DashboardInicio = () => {
     obtenerEstadisticas();
   }, []);
 
+  const usuarioString = localStorage.getItem('usuario');
+  // Usamos Number() para asegurar que la comparación con === funcione
+  const usuarioObj = usuarioString ? JSON.parse(usuarioString) : null;
+  const id_rol = usuarioObj ? Number(usuarioObj.id_rol) : null;
+
   // 4. FUNCIONES AYUDANTES (Helpers)
 
   // Obtener fecha actual en formato amigable (Ej: jueves, 30 de abril de 2026)
@@ -53,17 +58,6 @@ const DashboardInicio = () => {
   };
 
   const navigate = useNavigate();
-
-  // 2. EXTRAER EL ROL DEL USUARIO
-  // Buscamos el "bolsillo" del navegador para saber quién inició sesión
-  const usuarioString = localStorage.getItem('usuario');
-  let id_rol = null;
-
-  // Si hay un usuario guardado, lo convertimos a objeto JavaScript y sacamos su rol
-  if (usuarioString) {
-    const usuario = JSON.parse(usuarioString);
-    id_rol = usuario.id_rol;
-  }
 
   // Función para cerrar sesión
   const cerrarSesion = () => {
@@ -141,10 +135,11 @@ const DashboardInicio = () => {
             </>
           )}
 
-          {(id_rol === 1 || id_rol === 3 || id_rol === 4) &&  
-              <NavLink to="/dashboard/reportes" className='link'>
+          {[1, 3, 4].includes(id_rol) && (
+            <NavLink to="/dashboard/reportes" className='link'>
                   <FaChartBar className='icono-link' /> Ver Reportes
-              </NavLink>
+            </NavLink>
+          )  
           }
         </nav>
       </aside>
@@ -260,8 +255,17 @@ const DashboardInicio = () => {
 
 // 6. ESTILOS CSS EN LÍNEA
 const estilos = {
-
-  // Estilos comunes para las listas (Bloque 2 y 3)
+  botonSalir: {
+    width: '117px',
+    height: '48px',
+    backgroundColor: '#ff0000',
+    border: 'none',
+    borderRadius: '8px',
+    color: '#fff',
+    fontSize: '16px',
+    cursor: 'pointer',
+    display: 'flex'
+  },
 };
 
 export default DashboardInicio;
