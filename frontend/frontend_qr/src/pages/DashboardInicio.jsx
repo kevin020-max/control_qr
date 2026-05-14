@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate, Outlet, useLocation, NavLink } from 'react-router-dom';
+import { useNavigate, Outlet, useLocation, NavLink } from 'react-router-dom';
 import { FaUserFriends, FaSignInAlt, FaSignOutAlt, FaUserPlus, FaHome, FaQrcode, FaFileUpload, FaUserCog, FaChartBar, FaUser, FaUserGraduate } from 'react-icons/fa';
 import api from '../services/api';
 import logoSena from '../assets/logoSena.png';
@@ -80,6 +80,7 @@ const DashboardInicio = () => {
   // 5. RENDERIZADO DE LA INTERFAZ
   return (
     <>
+    <div className='contenedor'>
     {/* --- CABECERA --- */}
       <header>
         <div className='logo-sena'>
@@ -98,8 +99,8 @@ const DashboardInicio = () => {
           <button onClick={cerrarSesion} style={estilos.botonSalir}>Salir <FaSignOutAlt className='icono-link' /></button>
         </div>
       </header>
-    <div className='contenedor'>
 
+      <div className='cuerpo-dashboard'>
       {/* --- SIDEBAR --- */}
       <aside>
 
@@ -140,13 +141,11 @@ const DashboardInicio = () => {
             </>
           )}
 
-          {id_rol === 1 && 3 && 4 &&  (
-            <>
-              <NavLink to="/reportes" className='link'>
+          {(id_rol === 1 || id_rol === 3 || id_rol === 4) &&  
+              <NavLink to="/dashboard/reportes" className='link'>
                   <FaChartBar className='icono-link' /> Ver Reportes
               </NavLink>
-          </>
-          )}
+          }
         </nav>
       </aside>
 
@@ -253,6 +252,7 @@ const DashboardInicio = () => {
     </>
   )}
 </main>
+</div>
     </div>
     </>
   );

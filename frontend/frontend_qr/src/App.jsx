@@ -44,14 +44,16 @@ function App() {
               <Route path="gestion-usuarios" element={<GestionUsuarios />} />
               <Route path="gestion-aprendices" element={<GestionAprendices />} />
             </Route>
+
+            {/* 3. GRUPO DE INSTRUCTORES (3), COORDINADORES (4) Y ADMIN (1) */}
+            <Route element={<RutaProtegida rolesPermitidos={[1, 3, 4]} />}>
+              <Route path="reportes" element={<Reportes />} />
+            </Route>
           </Route>
           
         </Route>
 
-        {/* 3. GRUPO DE INSTRUCTORES (3), COORDINADORES (4) Y ADMIN (1) */}
-        <Route element={<RutaProtegida rolesPermitidos={[1, 3, 4]} />}>
-          <Route path="/reportes" element={<Reportes />} />
-        </Route>
+        
 
         {/* ================= RUTA POR DEFECTO ================= */}
         {/* Cualquier otra URL extraña va al Login para que el sistema decida qué hacer */}

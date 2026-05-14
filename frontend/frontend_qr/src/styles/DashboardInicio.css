@@ -80,6 +80,10 @@ aside {
   padding: 32px;
   width: 391px;
   border-right: solid 1px #e6e6e6;
+  height: 100%;
+  flex-shrink: 0;   /* Evita que se aplaste */
+  overflow-y: auto; /* Si el menú tiene muchas opciones, él mismo hace scroll */
+  background-color: #fff;
 }
 
 .menu {
@@ -124,13 +128,36 @@ aside {
   height: 32px;
 }
 
-.contenido {
+/* 1. El contenedor principal ocupa toda la pantalla y no permite scroll */
+.contenedor {
+  height: 100vh;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  flex: 1;
+  overflow: hidden; /* Esto bloquea el scroll de toda la página */
+}
+
+/* 2. El área que está debajo del Header (Sidebar + Contenido) */
+.cuerpo-dashboard {
+  display: flex;
+  flex: 1;         /* Ocupa todo el alto restante después del header */
+  overflow: hidden; /* Bloquea scroll aquí también */
+  width: 100%;
+}
+
+/* 4. EL PROTAGONISTA: El contenedor de contenido */
+.contenido {
+  flex: 1;          /* Ocupa todo el ancho restante */
+  height: 100%;     /* Ocupa todo el alto del cuerpo-dashboard */
   padding: 40px;
   background-color: #f9fafb;
   gap: 24px;
+  display: flex;
+  flex-direction: column;
+  
+  /* ESTAS DOS LÍNEAS HACEN LA MAGIA */
+  overflow-y: auto;   /* Activa el scroll solo aquí cuando el contenido sobresale */
+  overflow-x: hidden; /* Evita que aparezca la barra de abajo */
 }
 
 .titulos-contenido p {

@@ -34,16 +34,10 @@ const Login = () => {
       localStorage.setItem('usuario', JSON.stringify(data.usuario));
 
       // 2. Leemos el id_rol para saber a dónde mandarlo
-      const id_rol = data.usuario.id_rol;
 
       // 3. Redirección inteligente usando el hook useNavigate()
       // Si es Administrador (1) O si es Operario (2), ambos van a la misma plantilla
-      if (id_rol === 1 || id_rol === 2) {
-        navigate('/dashboard'); 
-      } else {
-        navigate('/reportes'); // Instructores (3) y Coordinadores (4) van a reportes
-      }
-
+      navigate('/dashboard'); 
     } catch (error) {
       console.error("Error al iniciar sesión", error);
       
