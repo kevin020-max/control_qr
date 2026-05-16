@@ -19,4 +19,7 @@ router.post(
   controlAccesoController.escanearQr
 );
 
+// Definimos el sub-path que responderá a la petición de la tabla
+router.get('/hoy', controlAccesoController.getAccesosHoy);
+
 module.exports = router;

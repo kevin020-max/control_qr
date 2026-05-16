@@ -12,6 +12,8 @@ import Visitantes from './pages/Visitantes';
 import CargaMasiva from './pages/CargaMasiva';
 import CrearUsuario from './pages/CrearUsuario';
 import GestionAprendices from './pages/GestionAprendices';
+import Alertas from './pages/Alertas';
+import RegistroAccesos from './pages/RegistroAccesos';
 
 // NUEVAS páginas para los otros roles
 import Reportes from './pages/Reportes';
@@ -36,6 +38,8 @@ function App() {
           <Route path="/dashboard" element={<DashboardInicio />}>
             <Route path="escaner" element={<Escaner />} />
             <Route path="visitantes" element={<Visitantes />} />
+            <Route path="alertas" element={<Alertas />} />
+            <Route path="registro-accesos" element={<RegistroAccesos />} />
 
             {/* ¡NUEVO! Sub-rutas EXCLUSIVAS del Administrador dentro del Dashboard */}
             <Route element={<RutaProtegida rolesPermitidos={[1]} />}>

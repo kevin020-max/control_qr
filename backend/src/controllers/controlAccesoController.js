@@ -5,6 +5,26 @@ const httpStatus = require('../constants/httpStatus');
 const qrModel = require('../models/qrModel');
 const controlAccesoModel = require('../models/controlAccesoModel');
 const { escanearQRSchema } = require('../validators/controlAccesoValidator');
+const controlAccesoService = require('../services/controlAccesosService');
+
+/**
+ * Controlador para enviar el consolidado de entradas y salidas de hoy
+ */
+const getAccesosHoy = async (req, res) => {
+    try {
+        const registros = await controlAccesoService.obtenerAccesosDelDia();
+        return res.status(200).json({
+            status: 'success',
+            data: registros // Esto es lo que busca tu respuesta.data.data en React
+        });
+    } catch (error) {
+        return res.status(500).json({
+            status: 'error',
+            message: 'Error interno al consultar los accesos de hoy',
+            error: error.message
+        });
+    }
+};
 
 const escanearQr = catchAsync(async (req, res, next) => {
   // 1. Zod extrae y valida el documento (número limpio)
@@ -75,5 +95,6 @@ const escanearQr = catchAsync(async (req, res, next) => {
 });
 
 module.exports = {
-  escanearQr
+  escanearQr,
+  getAccesosHoy
 };

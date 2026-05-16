@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Outlet, useLocation, NavLink } from 'react-router-dom';
-import { FaUserFriends, FaSignInAlt, FaSignOutAlt, FaUserPlus, FaHome, FaQrcode, FaFileUpload, FaUserCog, FaChartBar, FaUser, FaUserGraduate } from 'react-icons/fa';
+import { FaUserFriends, FaSignInAlt, FaSignOutAlt, FaUserPlus, FaHome, FaQrcode, FaFileUpload, FaUserCog, FaChartBar, FaUser, FaUserGraduate, FaBell, FaClipboardList } from 'react-icons/fa';
 import api from '../services/api';
 import logoSena from '../assets/logoSena.png';
 import '../styles/DashboardInicio.css'
@@ -113,7 +113,16 @@ const DashboardInicio = () => {
             <NavLink to="/dashboard/visitantes" className='link'>
               <FaUserPlus className='icono-link' /> Registrar Visitante
             </NavLink>
+            <NavLink to="/dashboard/alertas" className='link'>
+              <FaBell className='icono-link' /> Alertas
+            </NavLink>
           </>
+          )}
+
+          {[2, 3].includes(id_rol) && (
+            <NavLink to="/dashboard/registro-accesos" className='link'>
+              <FaClipboardList className='icono-link' /> Registro Accesos
+            </NavLink>
           )}
 
           {/* 3. LA MAGIA: RENDERIZADO CONDICIONAL */}
@@ -191,6 +200,7 @@ const DashboardInicio = () => {
 
     <div className='actividad-reciente'>
       <h2>Actividad reciente</h2>
+      <a href="./"></a>
 
       {/* --- BLOQUE 2: LISTA DE VISITANTES --- */}
 
@@ -255,17 +265,7 @@ const DashboardInicio = () => {
 
 // 6. ESTILOS CSS EN LÍNEA
 const estilos = {
-  botonSalir: {
-    width: '117px',
-    height: '48px',
-    backgroundColor: '#ff0000',
-    border: 'none',
-    borderRadius: '8px',
-    color: '#fff',
-    fontSize: '16px',
-    cursor: 'pointer',
-    display: 'flex'
-  },
+  
 };
 
 export default DashboardInicio;
