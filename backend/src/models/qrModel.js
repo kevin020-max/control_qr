@@ -29,4 +29,24 @@ const qrModel = {
   }
 };
 
-module.exports = qrModel;
+/**
+ * Cambia el estado de un código QR en la base de datos (ej. de 'activo' a 'expirado')
+ */
+const cambiarEstadoQr = async (id_qr, nuevoEstado) => {
+  try {
+    // Explicación: Hacemos un UPDATE directo a la tabla qr_control usando el id_qr
+    // Los signos de interrogación (?) evitan ataques de inyección SQL (Seguridad)
+    const sql = `UPDATE qr_control SET estado = ? WHERE id_qr = ?`;
+    
+    // Ejecutamos la consulta pasándole el texto del estado y el ID
+    const [resultado] = await db.execute(sql, [nuevoEstado, id_qr]);
+    
+    // Devolvemos true si se modificó al menos una fila
+    return resultado.affectedRows > 0;
+  } catch (error) {
+    console.error("Error en cambiarEstadoQr:", error);
+    throw error;
+  }
+};
+
+module.exports = { ...qrModel, cambiarEstadoQr };

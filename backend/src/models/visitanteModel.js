@@ -64,6 +64,25 @@ const registrarVisitante = async(datosVisitante, observacion) => {
   }
 };
 
+/**
+ * Cambia el estado de una persona en el sistema (1 = Activo, 2 = Inactivo)
+ */
+const cambiarEstadoPersona = async (id_persona, idNuevoEstado) => {
+  try {
+    // Explicación: Actualizamos la tabla personas basándonos en su llave primaria (id_persona)
+    const sql = `UPDATE personas SET tipo_estado = ? WHERE id_persona = ?`;
+    
+    // Ejecutamos la consulta. Recuerda que idNuevoEstado será un número (ej. 2)
+    const [resultado] = await db.execute(sql, [idNuevoEstado, id_persona]);
+    
+    return resultado.affectedRows > 0;
+  } catch (error) {
+    console.error("Error en cambiarEstadoPersona:", error);
+    throw error;
+  }
+};
+
 module.exports = {
-  registrarVisitante
+  registrarVisitante,
+  cambiarEstadoPersona
 };

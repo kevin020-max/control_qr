@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Outlet, useLocation, NavLink } from 'react-router-dom';
+import { useNavigate, Outlet, useLocation, NavLink, Link } from 'react-router-dom';
 import { FaUserFriends, FaSignInAlt, FaSignOutAlt, FaUserPlus, FaHome, FaQrcode, FaFileUpload, FaUserCog, FaChartBar, FaUser, FaUserGraduate, FaBell, FaClipboardList } from 'react-icons/fa';
 import api from '../services/api';
 import logoSena from '../assets/logoSena.png';
@@ -17,8 +17,7 @@ const DashboardInicio = () => {
     registrosRecientes: []     // Array para la lista blanca (Aprendices, Instructores, etc.)
   });
 
-  // 3. EFECTO DE CARGA (useEffect)
-  // Se ejecuta una sola vez al abrir esta pantalla para traer los datos reales de MySQL
+  // 3. EFECTO DE CARGA (useEffect) ACTUALIZADO EN TIEMPO REAL
   useEffect(() => {
     const obtenerEstadisticas = async () => {
       try {
@@ -29,8 +28,21 @@ const DashboardInicio = () => {
         console.error('Error al cargar las estadísticas:', error);
       }
     };
+
+    // Ejecutamos la consulta por primera vez al abrir o montar la pantalla
     obtenerEstadisticas();
-  }, []);
+
+    // NUEVO: Configuramos una petición en segundo plano cada 3 segundos
+    const intervalo = setInterval(() => {
+      obtenerEstadisticas();
+    }, 3000);
+
+    // NUEVO Y MUY CRÍTICO: Limpieza del temporizador
+    // Cuando el usuario cambie de vista (vaya al escáner, reportes, etc.), 
+    // detenemos el intervalo para no saturar al servidor de peticiones innecesarias.
+    return () => clearInterval(intervalo);
+
+  }, []); // El arreglo vacío asegura que el ciclo se configure una sola vez
 
   const usuarioString = localStorage.getItem('usuario');
   // Usamos Number() para asegurar que la comparación con === funcione
@@ -199,8 +211,12 @@ const DashboardInicio = () => {
       </div>
 
     <div className='actividad-reciente'>
-      <h2>Actividad reciente</h2>
-      <a href="./"></a>
+      <div className='acceso-directo'>
+        <h2>Actividad reciente</h2>
+        <Link to="/dashboard/registro-accesos" className="link-ver-todos">
+          Ver todos
+        </Link>
+      </div>
 
       {/* --- BLOQUE 2: LISTA DE VISITANTES --- */}
 
@@ -213,7 +229,7 @@ const DashboardInicio = () => {
                   </div>
                   <div>
                     <h4 style={estilos.nombrePersona}>{visitante.nombres} {visitante.apellidos}</h4>
-                    <p style={estilos.textoSecundario}>Entrada • {extraerHora(visitante.fecha_entrada)}</p>
+                    <p style={estilos.textoSecundario}>{obtenerNombreRol(4)} • Entrada • {extraerHora(visitante.fecha_entrada)}</p>
                     <p style={estilos.textoMotivo}>{visitante.observacion}</p>
                     <p style={estilos.textoExpiracion}>Expira: {extraerHora(visitante.fecha_expiracion)}</p>
                   </div>
@@ -221,7 +237,7 @@ const DashboardInicio = () => {
               </div>
             ))
           ) : (
-            <p style={estilos.mensajeVacio}>No hay visitantes activos en este momento.</p>
+            <p style={estilos.mensajeVacio}></p>
           )}
 
       {/* --- BLOQUE 3: OTROS REGISTROS --- */}

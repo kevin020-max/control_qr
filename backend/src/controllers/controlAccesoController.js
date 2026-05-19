@@ -3,6 +3,7 @@ const catchAsync = require('../errors/catchAsync');
 const AppError = require('../errors/AppError');
 const httpStatus = require('../constants/httpStatus');
 const qrModel = require('../models/qrModel');
+const visitantesModel = require('../models/visitanteModel');
 const controlAccesoModel = require('../models/controlAccesoModel');
 const { escanearQRSchema } = require('../validators/controlAccesoValidator');
 const controlAccesoService = require('../services/controlAccesosService');
@@ -43,16 +44,34 @@ const escanearQr = catchAsync(async (req, res, next) => {
     return next(new AppError(`Acceso denegado: El usuario ${infoQr.nombres} se encuentra INACTIVO.`, httpStatus.FORBIDDEN));
   }
 
-  // 4. REGLA DE NEGOCIO: Diferenciar Visitantes de Personal Permanente
-  // Convertimos a minúsculas por si acaso viene como "VISITANTE" o "visitante"
+// 4. REGLA DE NEGOCIO: Diferenciar Visitantes de Personal Permanente
   if (infoQr.tipo_persona_texto.toLowerCase() === 'visitante') {
-    // Si es visitante, SÍ debe tener un QR temporal
+    
     if (!infoQr.id_qr) {
       return next(new AppError(`El visitante ${infoQr.nombres} no tiene un QR temporal asignado.`, httpStatus.BAD_REQUEST));
     }
-    // Y debemos validar que ese QR no esté expirado[cite: 2]
+    
+    // A. Verificamos si el QR ya había sido marcado como expirado antes
     if (infoQr.estado_qr === 'expirado') {
       return next(new AppError('Acceso denegado: Este código QR temporal ha expirado', httpStatus.FORBIDDEN));
+    }
+
+    // B. LA NUEVA LÓGICA: Comparamos el reloj actual con la fecha límite del QR
+    const relojActual = new Date(); // Captura el milisegundo exacto de ahora
+    const limiteExpiracion = new Date(infoQr.fecha_expiracion); // Convierte la fecha de MySQL a formato JavaScript
+
+    // Si la hora de ahora es MAYOR (es decir, ocurrió después) que el límite...
+    if (relojActual > limiteExpiracion) {
+      
+      // 1. Apagamos el QR en la base de datos
+      await qrModel.cambiarEstadoQr(infoQr.id_qr, 'expirado');
+      
+      // 2. Apagamos al visitante para que no quede como 'activo' en tu inicio
+      // Recordemos que en tu tabla 'estado', el 2 significa 'inactivo'
+      await visitantesModel.cambiarEstadoPersona(infoQr.id_persona, 2); 
+
+      // 3. Bloqueamos la puerta y le avisamos al Frontend
+      return next(new AppError(`Acceso denegado: El tiempo de visita de ${infoQr.nombres} finalizó.`, httpStatus.FORBIDDEN));
     }
   }
 

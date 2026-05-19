@@ -1,0 +1,146 @@
+/* src/styles/Visitantes.css */
+
+.modulo-visitantes {
+  width: 100%;
+}
+
+.modulo-visitantes .titulo {
+  font-size: 32px;
+  color: #111827;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.modulo-visitantes .subtitulo {
+  font-size: 16px;
+  color: #6b7280;
+  margin-bottom: 24px;
+}
+
+/* Caja contenedora blanca unificada */
+.tarjeta-formulario-visitantes {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.01);
+}
+
+/* El Grid que separa las dos columnas del formulario */
+.formulario-grid-sena {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Dos columnas del mismo tamaño */
+  gap: 32px;
+}
+
+/* Contenedores verticales de cada columna */
+.columna-formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.grupo-input-sena {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Forzar a que la sección del textarea use una altura cómoda */
+.grupo-input-sena.el-textarea {
+  flex: 1;
+}
+
+.grupo-input-sena label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* Inputs, Selects y Textareas */
+.input-sena {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  background-color: #ffffff;
+  color: #1f2937;
+  transition: border-color 0.15s ease;
+}
+
+.input-sena:focus {
+  border-color: #39A900; /* Borde verde SENA */
+}
+
+textarea.input-sena {
+  resize: none;
+  height: 100%; /* Se estira para rellenar el espacio relativo */
+  min-height: 120px;
+}
+
+/* Fila inferior para centrar o expandir el botón */
+.fila-boton-full {
+  grid-column: span 2; /* Cruza ambas columnas del grid de lado a lado */
+  margin-top: 12px;
+}
+
+.btn-sena-visitantes {
+  width: 100%;
+  padding: 14px;
+  background-color: #39A900;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-sena-visitantes:hover {
+  background-color: #2b7d00;
+}
+
+/* Estilos para el estado del QR Exitoso */
+.caja-qr-exito {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  padding: 16px 0;
+}
+
+.contenedor-qr-svg {
+  padding: 16px;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  display: inline-block;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+/* Alertas de Mensaje */
+.alerta-formulario {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.alerta-formulario.error { background-color: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+.alerta-formulario.exito { background-color: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
+.alerta-formulario.info { background-color: #e0f2fe; color: #0369a1; }
+
+/* Responsivo: Si la pantalla se reduce, pasa a 1 sola columna de forma fluida */
+@media (max-width: 768px) {
+  .formulario-grid-sena {
+    grid-template-columns: 1fr;
+  }
+  .fila-boton-full {
+    grid-column: span 1;
+  }
+}
