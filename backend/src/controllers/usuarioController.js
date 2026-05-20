@@ -9,19 +9,19 @@ const db = require('../config/conexion_db');
  * Si la persona no existe en la base de datos, la crea automáticamente antes de asignarle el rol.
  */
 const crearUsuarioInterno = catchAsync(async (req, res, next) => {
-  // 1. Ahora recibimos más datos por si necesitamos crear a la persona desde cero
+  // 1. Recibimos los datos (Asegúrate de recibir 'contrasenia')
   const { 
     numero_documento, 
-    tipo_doc,       // Ej: 'CC', 'CE'
+    tipo_doc,       
     nombres, 
     apellidos, 
-    contrasena, 
+    contrasenia,    // <-- CAMBIO 1: Debe coincidir con lo que envía React (con 'i')
     id_rol, 
-    tipo_persona    // Ej: 2 (Instructor), 3 (Funcionario)
+    tipo_persona    
   } = req.body;
 
   // 2. Validación básica
-  if (!numero_documento || !contrasena || !id_rol || !nombres || !apellidos || !tipo_doc || !tipo_persona) {
+  if (!numero_documento || !contrasenia || !id_rol || !nombres || !apellidos || !tipo_doc || !tipo_persona) { // <-- CAMBIO 2: Validar 'contrasenia'
     return next(new AppError('Faltan datos obligatorios para registrar al usuario completo.', httpStatus.BAD_REQUEST));
   }
 
@@ -49,7 +49,7 @@ const crearUsuarioInterno = catchAsync(async (req, res, next) => {
   }
 
   // 6. Encriptamos la contraseña
-  const contraseniaEncriptada = await bcrypt.hash(contrasena, 12);
+  const contraseniaEncriptada = await bcrypt.hash(contrasenia, 12); // <-- CAMBIO 3: Usar 'contrasenia'
 
   // 7. Insertamos la cuenta de acceso en la BD
   console.log('🛑 [INFO] Creando credenciales de acceso en la tabla usuarios...');

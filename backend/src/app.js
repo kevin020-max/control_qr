@@ -16,6 +16,8 @@ const qrRoutes = require('./routes/qrRoutes');
 const cargaRoutes = require('./routes/cargaRoutes');
 const fichaRoutes = require('./routes/fichaRoutes');
 const personaRoutes = require('./routes/personaRoutes');
+const reporteRoutes = require('./routes/reporteRoutes');
+const { iniciarTareasProgramadas } = require('./tasks/cronReportes');
 
 // Inicializamos la aplicación de Express
 const app = express();
@@ -47,6 +49,8 @@ app.get('/api/saludo', (req, res) => {
   });
 });
 
+iniciarTareasProgramadas();
+
 app.use('/api/auth', authRoutes);
 app.use('/api/accesos', controlAccesoRoutes);
 app.use('/api/visitantes', visitanteRoutes);
@@ -57,6 +61,7 @@ app.use('/api/qr', qrRoutes);
 app.use('/api/carga-masiva', cargaRoutes);
 app.use('/api/fichas', fichaRoutes);
 app.use('/api/personas', personaRoutes);
+app.use('/api/reportes', reporteRoutes);
 
 // 3. MANEJO DE RUTAS NO ENCONTRADAS (Si React pide una URL que no existe)
 // Cambiamos app.all('*') por app.use() para compatibilidad con Express 5
