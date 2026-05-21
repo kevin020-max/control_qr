@@ -25,6 +25,17 @@ const crearUsuarioInterno = catchAsync(async (req, res, next) => {
     return next(new AppError('Faltan datos obligatorios para registrar al usuario completo.', httpStatus.BAD_REQUEST));
   }
 
+  
+    // CANDADO DE EXCLUSIVIDAD: Verificar si el documento ya pertenece a un Aprendiz
+  const [esAprendiz] = await db.execute(
+    'SELECT id_persona FROM personas WHERE numero_documento = ? AND tipo_persona = 1', 
+    [numero_documento]
+  );
+
+  if (esAprendiz.length > 0) {
+    return next(new AppError('No se puede registrar como usuario interno. Este número de documento ya está asignado a un Aprendiz activo en la institución.', httpStatus.BAD_REQUEST));
+  }
+
   // 3. Verificamos si la persona ya existe en la institución
   const [personas] = await db.execute('SELECT id_persona FROM personas WHERE numero_documento = ?', [numero_documento]);
   
@@ -71,6 +82,7 @@ const obtenerUsuarios = catchAsync(async (req, res, next) => {
     SELECT
       u.id_usuario,
       u.estado,
+      u.id_rol,
       p.numero_documento,
       p.nombres,
       p.apellidos,

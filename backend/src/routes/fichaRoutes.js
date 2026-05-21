@@ -10,4 +10,8 @@ const router = express.Router();
 router.post('/', fichaController.crearFicha);
 router.get('/', fichaController.listarFichas);
 
+// NUEVOS ENDPOINTS DINÁMICOS (usan el parámetro :id)
+router.put('/:id', fichaController.editarFicha);
+router.delete('/:id', fichaController.eliminarFicha);
+
 module.exports = router;

@@ -1,6 +1,5 @@
 -- ============================================================================
 -- SCRIPT MAESTRO: SISTEMA DE CONTROL QR SENA
--- Autor: Samuel Nuñez Gamboa y Equipo ADSO
 -- ============================================================================
 
 -- 1. PREPARACIÓN DEL ENTORNO
@@ -163,8 +162,11 @@ INSERT INTO ficha (numero_ficha, nombre) VALUES
 -- Creación de personas de prueba
 INSERT INTO personas (numero_documento, tipo_doc, nombres, apellidos, fecha_registro, tipo_persona, tipo_estado, id_ficha) 
 VALUES 
-(100500123, 'CC', 'Juan', 'Pérez', CURDATE(), 1, 1, 1),
-(1114309103, 'CC', 'Samuel', 'Nuñez Gamboa', CURDATE(), 1, 1, 1);
+(111122233, 'CC', 'Admin', 'General', CURDATE(), 3, 1, NULL),
+(100200321, 'CC', 'Guarda', 'Escaner', CURDATE(), 3, 1, NULL),
+(100300123, 'CC', 'Carlos', 'Garcia', CURDATE(), 3, 1, NULL);
 
--- NOTA: Recuerda que a ti (Samuel) debes crearte también en la tabla 'usuarios' 
--- desde tu backend o con un script encriptado para poder iniciar sesión.
+INSERT INTO usuarios (numero_documento, contrasenia, estado, id_rol) VALUES
+(111122233, '$2b$12$acZeHf13xt/TtFpsJ3FXceKTJt5TvKewcoD6NM45pd65.Jbcqctay', 1, 1), -- Contraseña: admin123
+(100200321, '$2b$12$BgHOk/GIY9z3CVnfDqSZB.mdjNsHfAG7fXdCZj21ExZ48faevDo1O', 1, 2), -- Contraseña: guarda123
+(100300123, '$2b$12$BgHOk/GIY9z3CVnfDqSZB.mdjNsHfAG7fXdCZj21ExZ48faevDo1O', 1, 3); -- -- Contraseña: guarda123

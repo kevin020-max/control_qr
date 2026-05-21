@@ -1,19 +1,19 @@
 // src/pages/GestionUsuarios.jsx
 import { useState, useEffect } from 'react';
-import api from '../services/api'; // Tu herramienta configurada para enviar el Token
+import api from '../services/api';
+import { FaUserShield, FaUserCog, FaUsers, FaSearch, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
+import '../styles/GestionUsuarios.css'; // Importamos los nuevos estilos
 
 const GestionUsuarios = () => {
-  // 1. ESTADOS: Para guardar la lista, controlar el texto de "Cargando..." y posibles errores
   const [usuarios, setUsuarios] = useState([]);
   const [cargando, setCargando] = useState(true);
-  const [mensaje, setMensaje] = useState({ texto: '', tipo: '' }); // Para alertas visuales
+  const [busqueda, setBusqueda] = useState('');
+  const [mensaje, setMensaje] = useState({ texto: '', tipo: '' });
 
-  // 2. READ: Función para traer todos los usuarios del backend
   const obtenerUsuarios = async () => {
     try {
       const respuesta = await api.get('/usuarios');
-      // Guardamos la lista de usuarios en el estado de React
-      setUsuarios(respuesta.data.data);
+      setUsuarios(respuesta.data.data || []);
     } catch (error) {
       console.error("Error al obtener usuarios:", error);
       mostrarMensaje('Error al cargar la lista de usuarios', 'error');
@@ -22,126 +22,173 @@ const GestionUsuarios = () => {
     }
   };
 
-  // 3. EFFECT: Se ejecuta automáticamente SOLO UNA VEZ cuando la página carga
   useEffect(() => {
     obtenerUsuarios();
   }, []);
 
-  // 4. UPDATE: Función para cambiar el rol de un usuario
   const cambiarRol = async (id_usuario, nuevoRol) => {
     try {
       await api.put(`/usuarios/${id_usuario}/rol`, { id_rol: Number(nuevoRol) });
       mostrarMensaje('Rol actualizado correctamente', 'exito');
-      obtenerUsuarios(); // Recargamos la tabla para ver los cambios
+      obtenerUsuarios(); 
     } catch (error) {
       mostrarMensaje('Error al actualizar el rol', 'error');
     }
   };
 
-  // 5. DELETE (Soft Delete): Función para Activar/Desactivar
   const cambiarEstado = async (id_usuario, estadoActual) => {
-    // Si el estado actual es 1 (Activo), el nuevo será 2 (Desactivado), y viceversa
     const nuevoEstado = estadoActual === 1 ? 2 : 1;
     try {
       await api.put(`/usuarios/${id_usuario}/estado`, { estado: nuevoEstado });
       mostrarMensaje(nuevoEstado === 1 ? 'Usuario Activado' : 'Usuario Desactivado', 'exito');
-      obtenerUsuarios(); // Recargamos la tabla
+      obtenerUsuarios();
     } catch (error) {
       mostrarMensaje('Error al cambiar el estado del usuario', 'error');
     }
   };
 
-  // Función auxiliar para mostrar alertas por 3 segundos
   const mostrarMensaje = (texto, tipo) => {
     setMensaje({ texto, tipo });
     setTimeout(() => setMensaje({ texto: '', tipo: '' }), 3000);
   };
 
-  return (
-    <div style={estilos.contenedor}>
-      <h2 style={estilos.titulo}>Gestión de Usuarios del Sistema</h2>
-      <p style={{ marginBottom: '20px', color: '#666' }}>
-        Administra los roles y el acceso al sistema de los funcionarios e instructores.
-      </p>
+  // --- LÓGICA DE FILTRADO (Barra de búsqueda de tu Figma) ---
+  const usuariosFiltrados = usuarios.filter(user => {
+    const termino = busqueda.toLowerCase();
+    const nombreCompleto = `${user.nombres} ${user.apellidos}`.toLowerCase();
+    const documento = user.numero_documento.toString();
+    return nombreCompleto.includes(termino) || documento.includes(termino);
+  });
 
-      {/* Alerta flotante de retroalimentación */}
+  // --- CÁLCULO DINÁMICO DE TARJETA DE ROLES ---
+  const conteoRoles = {
+    admin: usuarios.filter(u => u.id_rol === 1 && u.estado === 1).length,
+    operario: usuarios.filter(u => u.id_rol === 2 && u.estado === 1).length,
+    otros: usuarios.filter(u => (u.id_rol === 3 || u.id_rol === 4) && u.estado === 1).length
+  };
+
+  return (
+    <div className="modulo-gestion-roles">
+      <div className="encabezado-roles">
+        <h2>Gestión de roles</h2>
+        <p>Administre los roles y permisos de los usuarios del sistema</p>
+      </div>
+
       {mensaje.texto && (
-        <div style={mensaje.tipo === 'exito' ? estilos.alertaExito : estilos.alertaError}>
-          {mensaje.texto}
+        <div className={`alerta-flotante ${mensaje.tipo}`}>
+          {mensaje.tipo === 'exito' ? <FaCheckCircle /> : <FaExclamationCircle />}
+          <span>{mensaje.texto}</span>
         </div>
       )}
 
-      {cargando ? (
-        <p>Cargando usuarios...</p>
-      ) : (
-        <table style={estilos.tabla}>
-          <thead>
-            <tr>
-              <th style={estilos.th}>Documento</th>
-              <th style={estilos.th}>Nombre Completo</th>
-              <th style={estilos.th}>Rol Actual</th>
-              <th style={estilos.th}>Estado / Acceso</th>
-              <th style={estilos.th}>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {usuarios.map((user) => (
-              <tr key={user.id_usuario} style={{ backgroundColor: user.estado === 2 ? '#fee2e2' : 'white' }}>
-                <td style={estilos.td}>{user.numero_documento}</td>
-                <td style={estilos.td}>{user.nombres} {user.apellidos}</td>
-                
-                {/* Selector de Rol interactivo */}
-                <td style={estilos.td}>
-                  <select 
-                    value={user.id_rol} 
-                    onChange={(e) => cambiarRol(user.id_usuario, e.target.value)}
-                    style={estilos.select}
-                  >
-                    <option value={1}>Administrador</option>
-                    <option value={2}>Operario / Guarda</option>
-                    <option value={3}>Instructor</option>
-                    <option value={4}>Coordinador</option>
-                  </select>
-                </td>
+      {/* --- TARJETAS RESUMEN DE ARRIBA (FIGMA) --- */}
+      <div className="grid-tarjetas-roles">
+        <div className="tarjeta-rol-info">
+          <div className="icono-rol-wrapper verde-sena">
+            <FaUserShield />
+          </div>
+          <div>
+            <h3>Administrador</h3>
+            <p>Acceso total ({conteoRoles.admin} activos)</p>
+          </div>
+        </div>
 
-                <td style={estilos.td}>
-                  <span style={user.estado === 1 ? estilos.badgeActivo : estilos.badgeInactivo}>
-                    {user.estado === 1 ? 'Activo' : 'Desactivado'}
-                  </span>
-                </td>
+        <div className="tarjeta-rol-info">
+          <div className="icono-rol-wrapper verde-claro">
+            <FaUserCog />
+          </div>
+          <div>
+            <h3>Operario</h3>
+            <p>Control de acceso ({conteoRoles.operario} activos)</p>
+          </div>
+        </div>
 
-                {/* Botón de Soft Delete */}
-                <td style={estilos.td}>
-                  <button 
-                    onClick={() => cambiarEstado(user.id_usuario, user.estado)}
-                    style={user.estado === 1 ? estilos.botonPeligro : estilos.botonExito}
-                  >
-                    {user.estado === 1 ? 'Bloquear Acceso' : 'Restaurar Acceso'}
-                  </button>
-                </td>
+        <div className="tarjeta-rol-info">
+          <div className="icono-rol-wrapper gris-sena">
+            <FaUsers />
+          </div>
+          <div>
+            <h3>Instructor y Funcionario</h3>
+            <p>Consultas y reportes ({conteoRoles.otros} activos)</p>
+          </div>
+        </div>
+      </div>
+
+      {/* --- BARRA DE BÚSQUEDA --- */}
+      <div className="contenedor-busqueda-roles">
+        <FaSearch className="icono-buscar-input" />
+        <input 
+          type="text" 
+          placeholder="Buscar por nombre o documento..." 
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+          className="input-buscar-roles"
+        />
+      </div>
+
+      {/* --- TABLA DE DATOS DE USUARIOS --- */}
+      <div className="contenedor-tabla-roles">
+        {cargando ? (
+          <div className="cargando-tabla">Cargando usuarios del sistema...</div>
+        ) : (
+          <table className="tabla-sena-roles">
+            <thead>
+              <tr>
+                <th>Documento</th>
+                <th>Nombre</th>
+                <th>Rol actual</th>
+                <th>Estado</th>
+                <th className="txt-centro">Acciones</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+            </thead>
+            <tbody>
+              {usuariosFiltrados.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="txt-centro fila-vacia">No se encontraron usuarios coincidentes.</td>
+                </tr>
+              ) : (
+                usuariosFiltrados.map((user) => (
+                  <tr key={user.id_usuario} className={user.estado === 2 ? 'fila-desactivada' : ''}>
+                    <td className="txt-bold">{user.numero_documento}</td>
+                    <td>{user.nombres} {user.apellidos}</td>
+                    
+                    {/* El Dropdown dinámico toma el id_rol de la BD */}
+                    <td>
+                      <select 
+                        value={user.id_rol} 
+                        onChange={(e) => cambiarRol(user.id_usuario, e.target.value)}
+                        className="select-tabla-rol"
+                      >
+                        <option value={1}>Administrador</option>
+                        <option value={2}>Operario / Guarda</option>
+                        <option value={3}>Instructor</option>
+                        <option value={4}>Coordinador</option>
+                      </select>
+                    </td>
+
+                    <td>
+                      <span className={`status-badge ${user.estado === 1 ? 'activo' : 'inactivo'}`}>
+                        {user.estado === 1 ? 'Activo' : 'Inactivo'}
+                      </span>
+                    </td>
+
+                    <td className="txt-centro">
+                      <button 
+                        onClick={() => cambiarEstado(user.id_usuario, user.estado)}
+                        className={`btn-tabla-accion ${user.estado === 1 ? 'bloquear' : 'restaurar'}`}
+                      >
+                        {user.estado === 1 ? 'Bloquear Acceso' : 'Restaurar Acceso'}
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
-};
-
-// Estilos para una tabla profesional
-const estilos = {
-  contenedor: { padding: '20px', maxWidth: '1000px' },
-  titulo: { color: '#39A900', borderBottom: '2px solid #ccc', paddingBottom: '10px' },
-  tabla: { width: '100%', borderCollapse: 'collapse', marginTop: '20px', backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' },
-  th: { backgroundColor: '#f3f4f6', padding: '12px', textAlign: 'left', borderBottom: '2px solid #ddd' },
-  td: { padding: '12px', borderBottom: '1px solid #ddd' },
-  select: { padding: '5px', borderRadius: '4px', border: '1px solid #ccc' },
-  badgeActivo: { backgroundColor: '#dcfce7', color: '#166534', padding: '5px 10px', borderRadius: '15px', fontSize: '12px', fontWeight: 'bold' },
-  badgeInactivo: { backgroundColor: '#fee2e2', color: '#991b1b', padding: '5px 10px', borderRadius: '15px', fontSize: '12px', fontWeight: 'bold' },
-  botonPeligro: { padding: '8px 12px', backgroundColor: '#ef4444', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' },
-  botonExito: { padding: '8px 12px', backgroundColor: '#39A900', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' },
-  alertaExito: { backgroundColor: '#dcfce7', color: '#166534', padding: '10px', borderRadius: '5px', marginBottom: '15px' },
-  alertaError: { backgroundColor: '#fee2e2', color: '#991b1b', padding: '10px', borderRadius: '5px', marginBottom: '15px' }
 };
 
 export default GestionUsuarios;

@@ -16,6 +16,17 @@ const crearAprendiz = catchAsync(async (req, res, next) => {
     return next(new AppError('Por favor, completa todos los campos obligatorios.', 400));
   }
 
+  
+  // CANDADO DE EXCLUSIVIDAD: Verificar si el documento ya pertenece al Personal del Sistema
+  const [esPersonalInterno] = await db.execute(
+    'SELECT id_persona FROM personas WHERE numero_documento = ? AND tipo_persona IN (2, 3)', 
+    [numero_documento] // 2: Instructor, 3: Funcionario/Guarda/Admin
+  );
+
+  if (esPersonalInterno.length > 0) {
+    return next(new AppError('Operación denegada. Este número de documento ya está registrado en el sistema con un perfil administrativo/instructor y no puede duplicarse como Aprendiz.', httpStatus.BAD_REQUEST));
+  }
+
   // 3. Verificamos que el documento no esté registrado ya en el sistema
   const [existePersona] = await db.execute('SELECT * FROM personas WHERE numero_documento = ?', [numero_documento]);
   if (existePersona.length > 0) {

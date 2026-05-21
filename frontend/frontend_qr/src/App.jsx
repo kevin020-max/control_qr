@@ -14,6 +14,7 @@ import CrearUsuario from './pages/CrearUsuario';
 import GestionAprendices from './pages/GestionAprendices';
 import Alertas from './pages/Alertas';
 import RegistroAccesos from './pages/RegistroAccesos';
+import GestionFichas from './pages/GestionFichas';
 
 // NUEVAS páginas para los otros roles
 import Reportes from './pages/Reportes';
@@ -47,6 +48,7 @@ function App() {
               <Route path="crear-usuario" element={<CrearUsuario />} />
               <Route path="gestion-usuarios" element={<GestionUsuarios />} />
               <Route path="gestion-aprendices" element={<GestionAprendices />} />
+              <Route path="gestion-fichas" element={<GestionFichas />} />
             </Route>
 
             {/* 3. GRUPO DE INSTRUCTORES (3), COORDINADORES (4) Y ADMIN (1) */}

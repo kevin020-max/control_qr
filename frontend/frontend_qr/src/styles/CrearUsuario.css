@@ -114,6 +114,64 @@
   cursor: not-allowed;
 }
 
+.ancho-completo {
+  flex: none !important;
+  width: 100%;
+}
+
+/* --- NUEVOS AJUSTES PARA EDICIÓN Y ACCIONES --- */
+
+.txt-centro-ficha {
+  text-align: center !important;
+}
+
+.caja-botones-acciones {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* Botones base de la tabla */
+.btn-accion-tabla {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color 0.15s;
+}
+
+.btn-accion-tabla.editar-btn { background-color: #f3f4f6; color: #4b5563; }
+.btn-accion-tabla.editar-btn:hover { background-color: #e5e7eb; }
+
+.btn-accion-tabla.eliminar-btn { background-color: #fee2e2; color: #dc2626; }
+.btn-accion-tabla.eliminar-btn:hover { background-color: #fca5a5; }
+
+.btn-accion-tabla.guardar-btn { background-color: #39A900; color: white; }
+.btn-accion-tabla.guardar-btn:hover { background-color: #2b7d00; }
+
+.btn-accion-tabla.cancelar-btn { background-color: #9ca3af; color: white; }
+.btn-accion-tabla.cancelar-btn:hover { background-color: #6b7280; }
+
+/* Inputs dentro de las celdas al editar */
+.input-edicion-celda {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid #39A900;
+  border-radius: 4px;
+  font-size: 14px;
+  outline: none;
+  background-color: #fffdfa; /* Tono sutil para indicar edición */
+}
+
+.input-edicion-celda.text-bold-input {
+  font-weight: 700;
+}
+
 /* --- Responsive (Celulares) --- */
 @media (max-width: 640px) {
   .fila-inputs {

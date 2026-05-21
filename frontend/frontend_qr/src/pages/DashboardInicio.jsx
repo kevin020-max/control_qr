@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Outlet, useLocation, NavLink, Link } from 'react-router-dom';
-import { FaUserFriends, FaSignInAlt, FaSignOutAlt, FaUserPlus, FaHome, FaQrcode, FaFileUpload, FaUserCog, FaChartBar, FaUser, FaUserGraduate, FaBell, FaClipboardList } from 'react-icons/fa';
+import { FaUserFriends, FaSignInAlt, FaSignOutAlt, FaUserPlus, FaHome, FaQrcode, FaFileUpload, FaUserCog, FaChartBar, FaUser, FaUserGraduate, FaBell, FaClipboardList, FaHashtag } from 'react-icons/fa';
 import api from '../services/api';
 import logoSena from '../assets/logoSena.png';
 import '../styles/DashboardInicio.css'
@@ -62,12 +62,17 @@ const DashboardInicio = () => {
     return fecha.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
   };
 
-  // Convertir el ID numérico del rol en un texto amigable para mostrar en pantalla
-  const obtenerNombreRol = (tipo) => {
-    // Estos roles dependen de cómo configuraste tu base de datos
-    const roles = { 1: 'Aprendiz', 2: 'Instructor', 3: 'Funcionario', 4: 'Visitante' };
-    return roles[tipo] || 'Otro';
+  // Convertir el ID numérico del rol de usuario en un texto amigable para la cabecera
+const obtenerNombreRol = (tipo) => {
+  // Ajustado para coincidir perfectamente con la tabla 'roles' de tu base de datos
+  const roles = { 
+    1: 'Administrador Total', 
+    2: 'Operario / Guarda', 
+    3: 'Instructor', 
+    4: 'Coordinador' 
   };
+  return roles[tipo] || 'Usuario SENA';
+};
 
   const navigate = useNavigate();
 
@@ -99,8 +104,14 @@ const DashboardInicio = () => {
 
         <div className='logout'>
           <div className='identidad'>
-            <h1>Admin SENA</h1>
-            <p>Administrador</p>
+            <h1>
+            {usuarioObj && usuarioObj.nombres 
+              ? `${usuarioObj.nombres} ${usuarioObj.apellidos || ''}` 
+              : 'Admin SENA'}
+          </h1>
+          <p>
+            {id_rol ? obtenerNombreRol(id_rol) : 'Administrador'}
+          </p>
           </div>
           <button onClick={cerrarSesion} style={estilos.botonSalir}>Salir <FaSignOutAlt className='icono-link' /></button>
         </div>
@@ -152,6 +163,9 @@ const DashboardInicio = () => {
               </NavLink>
               <NavLink to="/dashboard/gestion-aprendices" className='link'>
                 <FaUserGraduate className='icono-link' /> Gestionar Aprendices
+              </NavLink>
+              <NavLink to="/dashboard/gestion-fichas" className='link'>
+                <FaHashtag className='icono-link' /> Gestionar Fichas
               </NavLink>
             </>
           )}
