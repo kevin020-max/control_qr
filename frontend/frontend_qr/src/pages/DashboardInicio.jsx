@@ -74,6 +74,16 @@ const obtenerNombreRol = (tipo) => {
   return roles[tipo] || 'Usuario SENA';
 };
 
+const obtenerTipoPersonaTexto = (tipo) => {
+  const tipos = { 
+    1: 'Aprendiz', 
+    2: 'Instructor', 
+    3: 'Funcionario', 
+    4: 'Visitante' 
+  };
+  return tipos[tipo] || 'Usuario SENA';
+};
+
   const navigate = useNavigate();
 
   // Función para cerrar sesión
@@ -272,9 +282,9 @@ const obtenerNombreRol = (tipo) => {
                     <div>
                       <h4 style={estilos.nombrePersona}>{registro.nombres} {registro.apellidos}</h4>
                       <p style={estilos.textoMotivo}>
-                        {obtenerNombreRol(registro.tipo_persona)} • {tipoRegistro}
-                        <p style={estilos.textoSecundario}>{horaMostrar}</p>
-                      </p>
+                          {obtenerTipoPersonaTexto(registro.tipo_persona)} • {tipoRegistro}
+                          <span style={estilos.textoSecundario}> — {horaMostrar}</span>
+                        </p>
                     </div>
                   </div>
                 </div>
