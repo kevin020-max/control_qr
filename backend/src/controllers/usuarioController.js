@@ -74,11 +74,11 @@ const crearUsuarioInterno = catchAsync(async (req, res, next) => {
   });
 });
 
-// Controlador para obtener la lista de usuarios con sus roles y datos personales
+// Controlador optimizado para obtener la lista de usuarios con filtro dinámico por Rol
 const obtenerUsuarios = catchAsync(async (req, res, next) => {
-  //Usamos INNER JOIN para combinar 3 tablas en una sola consulta.
-  //Así el Frontend recibe el nombre real del rol y de la persona, no solo números.
-  const sql = `
+  const { id_rol } = req.query; // Capturamos el query param opcional (ej: ?id_rol=2)
+  
+  let sql = `
     SELECT
       u.id_usuario,
       u.estado,
@@ -91,8 +91,19 @@ const obtenerUsuarios = catchAsync(async (req, res, next) => {
     INNER JOIN personas p ON u.numero_documento = p.numero_documento
     INNER JOIN roles r ON u.id_rol = r.id_rol
   `;
+  
+  const parametros = [];
+  
+  // Si el frontend envía un rol específico para filtrar, inyectamos la cláusula WHERE
+  if (id_rol) {
+    sql += ` WHERE u.id_rol = ?`;
+    parametros.push(Number(id_rol));
+  }
+  
+  // Mantenemos ordenados los registros para una mejor lectura visual
+  sql += ` ORDER BY u.id_usuario DESC`;
 
-  const [usuarios] = await db.execute(sql);
+  const [usuarios] = await db.execute(sql, parametros);
 
   res.status(httpStatus.OK).json({
     status: 'success',

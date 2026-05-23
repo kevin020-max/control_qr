@@ -201,7 +201,203 @@
 .alerta-flotante.exito { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
 .alerta-flotante.error { background-color: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
 
+/* ============================================================================
+   ESTILOS ADICIONALES PARA EL MODAL DE CONFIRMACIÓN DE ROLES Y ESTADOS
+   ============================================================================ */
+
+.overlay-modal-sena {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* Sombra de fondo oscura */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000; /* Asegura quedar por encima de cualquier tabla o sidebar */
+  animation: fadeInModal 0.2s ease-out;
+}
+
+.tarjeta-modal-sena {
+  background-color: #ffffff;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  animation: scaleUpModal 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.encabezado-modal-alerta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  color: white;
+}
+
+.encabezado-modal-alerta.alerta-roja { background-color: #dc2626; }
+.encabezado-modal-alerta.alerta-verde { background-color: #39A900; }
+
+.icono-modal-sena-aviso {
+  font-size: 22px;
+}
+
+.encabezado-modal-alerta h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.cuerpo-modal-sena {
+  padding: 20px;
+  color: #374151;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.info-usuario-modal-caja {
+  background-color: #f9fafb;
+  border-left: 4px solid #39A900;
+  padding: 12px;
+  border-radius: 0 6px 6px 0;
+  margin: 14px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-usuario-modal-caja strong {
+  font-size: 16px;
+  color: #111827;
+}
+
+.info-usuario-modal-caja span {
+  font-size: 13px;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.txt-advertencia-sub {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 10px;
+  background-color: #fffbeb;
+  padding: 8px 10px;
+  border-radius: 4px;
+  border: 1px solid #fef3c7;
+}
+
+.pie-modal-sena {
+  background-color: #f3f4f6;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.btn-modal-sena-cancelar {
+  background-color: #e5e7eb;
+  color: #374151;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+.btn-modal-sena-cancelar:hover { background-color: #d1d5db; }
+
+.btn-modal-sena-confirmar {
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.btn-modal-sena-confirmar.confirmar-bloqueo { background-color: #dc2626; }
+.btn-modal-sena-confirmar.confirmar-bloqueo:hover { background-color: #b91c1c; }
+
+.btn-modal-sena-confirmar.confirmar-activacion { background-color: #39A900; }
+.btn-modal-sena-confirmar.confirmar-activacion:hover { background-color: #2b7d00; }
+
+/* Animaciones de entrada del Modal */
+@keyframes fadeInModal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUpModal {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
 /* Responsivo */
 @media (max-width: 768px) {
   .grid-tarjetas-roles { grid-template-columns: 1fr; gap: 12px; }
+}
+
+/* --- DISEÑO DE LA CAJA DE FILTROS COMBINADOS (USUARIOS) --- */
+
+.caja-herramientas-filtros-usuarios {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+/* Modificamos el contenedor del input original para que jueguen en equipo flex */
+.modulo-gestion-roles .contenedor-busqueda-roles {
+  margin-bottom: 0 !important;
+  flex: 1;
+  max-width: 400px;
+}
+
+.contenedor-filtro-usuarios-rol {
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 0 12px;
+  gap: 8px;
+  width: 100%;
+  max-width: 280px;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
+}
+
+.icono-filtro-usuarios-input {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.select-filtro-rol-usuarios {
+  border: none;
+  background: transparent;
+  padding: 12px 4px;
+  font-size: 14px;
+  color: #374151;
+  outline: none;
+  width: 100%;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* Adaptación fluida para dispositivos móviles o paneles reducidos */
+@media (max-width: 768px) {
+  .caja-herramientas-filtros-usuarios {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .modulo-gestion-roles .contenedor-busqueda-roles,
+  .contenedor-filtro-usuarios-rol {
+    max-width: 100%;
+  }
 }

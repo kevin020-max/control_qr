@@ -1,6 +1,6 @@
 // src/pages/CargaMasiva.jsx
 import { useState, useEffect, useRef } from 'react';
-import { FaUserGraduate, FaChalkboardTeacher, FaUserTie, FaFileExcel, FaUpload, FaCheckCircle, FaExclamationCircle, FaSpinner } from 'react-icons/fa';
+import { FaUserGraduate, FaChalkboardTeacher, FaUserTie, FaFileExcel, FaUpload, FaCheckCircle, FaExclamationCircle, FaSpinner, FaInfoCircle } from 'react-icons/fa';
 import api from '../services/api';
 import '../styles/CargaMasiva.css';
 
@@ -20,15 +20,16 @@ const CargaMasiva = () => {
   const inputArchivoRef = useRef(null);
 
   // 3. CARGAR FICHAS AL INICIO
+  const cargarFichas = async () => {
+    try {
+      const res = await api.get('/fichas');
+      setFichas(res.data.data || []);
+    } catch (error) {
+      console.error("Error al cargar fichas:", error);
+    }
+  };
+
   useEffect(() => {
-    const cargarFichas = async () => {
-      try {
-        const res = await api.get('/fichas');
-        setFichas(res.data.data || []);
-      } catch (error) {
-        console.error("Error al cargar fichas:", error);
-      }
-    };
     cargarFichas();
   }, []);
 
@@ -64,7 +65,7 @@ const CargaMasiva = () => {
   const validarYGuardarArchivo = (file) => {
     const extension = file.name.split('.').pop().toLowerCase();
     if (extension !== 'xlsx') {
-      alert("Solo se permiten archivos Excel (.xlsx, .xls)");
+      alert("Solo se permiten archivos Excel (.xlsx)");
       return;
     }
     setArchivo(file);
@@ -75,31 +76,31 @@ const CargaMasiva = () => {
   // 6. ENVIAR DATOS AL BACKEND (LA MAGIA)
   const procesarCargaMasiva = async () => {
     if (!archivo) return alert("Por favor selecciona un archivo Excel.");
-    if (tabActiva === 'aprendices' && !fichaSeleccionada) {
-      return alert("Para cargar aprendices, debes seleccionar o crear una ficha.");
-    }
 
     setEstadoSubida('cargando');
     
-    // Al enviar archivos por red, obligatoriamente usamos FormData
     const formData = new FormData();
     formData.append('archivo', archivo);
-    if (tabActiva === 'aprendices') {
+    
+    // CORREGIDO: Si seleccionó una ficha manualmente, se envía; de lo contrario va vacío y el backend la extrae del Excel
+    if (tabActiva === 'aprendices' && fichaSeleccionada) {
       formData.append('id_ficha', fichaSeleccionada);
     }
 
     try {
       const endpoint = `/carga-masiva/${tabActiva}`;
       const respuesta = await api.post(endpoint, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' } // Indispensable para multer
+        headers: { 'Content-Type': 'multipart/form-data' } 
       });
 
       setEstadoSubida('exito');
       setMensaje({ 
-        texto: '¡Carga masiva completada con éxito!', 
+        texto: respuesta.data.message || '¡Carga masiva completada con éxito!', 
         detalle: respuesta.data.data 
       });
-      setArchivo(null); // Limpiamos para el siguiente
+      setArchivo(null); 
+      setFichaSeleccionada(''); // Reseteamos la selección manual
+      cargarFichas(); // Recargamos el listado por si el backend creó una ficha nueva en caliente
 
     } catch (error) {
       setEstadoSubida('error');
@@ -130,21 +131,26 @@ const CargaMasiva = () => {
         </button>
       </div>
 
-      {/* --- SECCIÓN 1: ASIGNAR FICHA (Solo visible en Aprendices) --- */}
+      {/* --- SECCIÓN 1: ASIGNAR FICHA (Campos manuales/opcionales) --- */}
       {tabActiva === 'aprendices' && (
         <div className="caja-seccion">
-          <h3 className="titulo-seccion">1. Asignar a Ficha</h3>
+          <div className="header-automatizacion-info">
+            <h3 className="titulo-seccion">1. Asignación de Ficha (Opcional)</h3>
+            <div className="badge-info-automatica">
+              <FaInfoCircle /> El sistema detectará y registrará de forma automática el número de ficha y programa desde el encabezado de SofiaPlus.
+            </div>
+          </div>
           
-          <div className="grid-ficha">
+          <div className="grid-ficha" style={{ marginTop: '15px' }}>
             {/* Opcion A: Seleccionar Existente */}
             <div className="columna-ficha">
-              <label>Seleccionar Ficha Existente</label>
+              <label>Forzar Ficha Existente (Opcional)</label>
               <select 
                 value={fichaSeleccionada} 
                 onChange={(e) => setFichaSeleccionada(e.target.value)}
                 className="input-sena"
               >
-                <option value="">-- Elige una ficha --</option>
+                <option value="">-- Autodetectar desde el archivo (Recomendado) --</option>
                 {fichas.map(f => (
                   <option key={f.id_ficha} value={f.id_ficha}>{f.numero_ficha} - {f.nombre}</option>
                 ))}
@@ -153,7 +159,7 @@ const CargaMasiva = () => {
 
             {/* Opcion B: Crear Nueva */}
             <div className="columna-ficha box-crear">
-              <label>O Crear Nueva Ficha</label>
+              <label>O Crear / Registrar Ficha Manual</label>
               <div className="fila-inputs-ficha">
                 <input 
                   type="number" 
@@ -179,7 +185,7 @@ const CargaMasiva = () => {
       {/* --- SECCIÓN 2: ZONA DRAG & DROP --- */}
       <div className="caja-seccion">
         <div className="header-seccion-archivo">
-          <h3 className="titulo-seccion">{tabActiva === 'aprendices' ? '2. Cargar Archivo Excel' : '1. Cargar Archivo Excel'}</h3>
+          <h3 className="titulo-seccion">{tabActiva === 'aprendices' ? '2. Cargar Archivo Excel de SofiaPlus' : '1. Cargar Archivo Excel'}</h3>
         </div>
 
         <div 

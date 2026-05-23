@@ -67,11 +67,13 @@ const obtenerAprendices = catchAsync(async (req, res, next) => {
       p.nombres,
       p.apellidos,
       p.tipo_estado,
+      p.id_ficha,               -- <-- ESTA LÍNEA ES CRÍTICA PARA EL FILTRO
       f.numero_ficha,
       f.nombre AS nombre_programa
     FROM personas p
     INNER JOIN ficha f ON p.id_ficha = f.id_ficha
-    WHERE p.tipo_persona = 1
+    WHERE p.tipo_persona = 1    -- 1: Aprendiz en tu tabla tipo_persona
+    ORDER BY p.id_persona DESC
   `;
   
   const [aprendices] = await db.execute(sql);

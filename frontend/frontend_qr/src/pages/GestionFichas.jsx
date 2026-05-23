@@ -1,7 +1,7 @@
 // src/pages/GestionFichas.jsx
 import { useState, useEffect } from 'react';
 import api from '../services/api';
-import { FaIdCard, FaPlus, FaCheckCircle, FaExclamationCircle, FaListUl, FaEdit, FaTrash, FaTimes, FaSave } from 'react-icons/fa';
+import { FaIdCard, FaPlus, FaCheckCircle, FaExclamationCircle, FaListUl, FaSearch } from 'react-icons/fa';
 import '../styles/GestionFichas.css';
 
 const GestionFichas = () => {
@@ -10,14 +10,13 @@ const GestionFichas = () => {
   const [cargando, setCargando] = useState(true);
   const [mensaje, setMensaje] = useState({ texto: '', tipo: '' });
   
-  // Estado para crear nueva ficha
+  // --- NUEVO: Estado para la barra de búsqueda ---
+  const [busqueda, setBusqueda] = useState('');
+  
+  // Estado para crear nueva ficha de manera opcional/manual
   const [formData, setFormData] = useState({ numero_ficha: '', nombre: '' });
 
-  // 2. ESTADOS PARA EDICIÓN EN LÍNEA
-  const [idFichaEditando, setIdFichaEditando] = useState(null); // Almacena el ID de la fila que se está editando
-  const [editFormData, setEditFormData] = useState({ numero_ficha: '', nombre: '' });
-
-  // 3. OBTENER LISTADO (READ)
+  // 2. OBTENER LISTADO (READ)
   const obtenerFichas = async () => {
     try {
       const respuesta = await api.get('/fichas');
@@ -34,52 +33,16 @@ const GestionFichas = () => {
     obtenerFichas();
   }, []);
 
-  // 4. CREAR FICHA (CREATE)
+  // 3. CREAR FICHA MANUAL (CREATE)
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const respuesta = await api.post('/fichas', formData);
-      mostrarMensaje(respuesta.data.message || 'Ficha registrada.', 'exito');
+      mostrarMensaje(respuesta.data.message || 'Ficha registrada con éxito.', 'exito');
       setFormData({ numero_ficha: '', nombre: '' });
       obtenerFichas();
     } catch (error) {
-      mostrarMensaje(error.response?.data?.message || 'Error al guardar.', 'error');
-    }
-  };
-
-  // 5. PREPARAR EDICIÓN (Activa los inputs en la fila elegida)
-  const iniciarEdicion = (ficha) => {
-    setIdFichaEditando(ficha.id_ficha);
-    setEditFormData({ numero_ficha: ficha.numero_ficha, nombre: ficha.nombre });
-  };
-
-  const cancelarEdicion = () => {
-    setIdFichaEditando(null);
-    setEditFormData({ numero_ficha: '', nombre: '' });
-  };
-
-  // 6. GUARDAR EDICIÓN (UPDATE)
-  const handleGuardarCambios = async (id_ficha) => {
-    try {
-      const respuesta = await api.put(`/fichas/${id_ficha}`, editFormData);
-      mostrarMensaje(respuesta.data.message || 'Ficha actualizada.', 'exito');
-      setIdFichaEditando(null); // Cerramos el modo edición
-      obtenerFichas(); // Recargamos datos
-    } catch (error) {
-      mostrarMensaje(error.response?.data?.message || 'Error al actualizar.', 'error');
-    }
-  };
-
-  // 7. ELIMINAR FICHA (DELETE)
-  const handleEliminar = async (id_ficha, numero_ficha) => {
-    if (!window.confirm(`¿Está seguro de eliminar permanentemente la ficha ${numero_ficha}?`)) return;
-
-    try {
-      const respuesta = await api.delete(`/fichas/${id_ficha}`);
-      mostrarMensaje(respuesta.data.message || 'Ficha eliminada.', 'exito');
-      obtenerFichas();
-    } catch (error) {
-      mostrarMensaje(error.response?.data?.message || 'No se pudo eliminar.', 'error');
+      mostrarMensaje(error.response?.data?.message || 'Error al guardar la ficha.', 'error');
     }
   };
 
@@ -88,11 +51,21 @@ const GestionFichas = () => {
     setTimeout(() => setMensaje({ texto: '', tipo: '' }), 4000);
   };
 
+  // --- NUEVO: LÓGICA DE FILTRADO DINÁMICO POR TEXTO O CÓDIGO ---
+  const fichasFiltradas = fichas.filter((ficha) => {
+    const termino = busqueda.toLowerCase().trim();
+    const codigoFicha = ficha.numero_ficha.toString();
+    const nombrePrograma = ficha.nombre.toLowerCase();
+    
+    // Si no hay término ingresado muestra todo, de lo contrario evalúa coincidencias
+    return !termino || codigoFicha.includes(termino) || nombrePrograma.includes(termino);
+  });
+
   return (
     <div className="modulo-gestion-fichas">
       <div className="encabezado-fichas">
         <h2><FaIdCard /> Gestión de Fichas SENA</h2>
-        <p>Administre los códigos de fichas y los programas de formación tecnológica e institucional.</p>
+        <p>Consulte las fichas registradas de forma automática o cree nuevos programas de manera manual.</p>
       </div>
 
       {mensaje.texto && (
@@ -102,9 +75,9 @@ const GestionFichas = () => {
         </div>
       )}
 
-      {/* PANEL DE REGISTRO */}
+      {/* PANEL DE REGISTRO MANUAL */}
       <div className="tarjeta-ficha-panel">
-        <h3>Registrar Nueva Ficha de Formación</h3>
+        <h3>Registrar Nueva Ficha de Formación (Manual)</h3>
         <form onSubmit={handleSubmit} className="formulario-ficha-layout">
           <div className="grupo-input-ficha input-corto">
             <label>Número de Ficha</label>
@@ -138,9 +111,23 @@ const GestionFichas = () => {
         </form>
       </div>
 
-      {/* PANEL DIRECTORIO / TABLA */}
+      {/* PANEL DIRECTORIO / TABLA DE SOLO LECTURA */}
       <div className="tarjeta-ficha-panel">
-        <h3 className="titulo-lista-fichas"><FaListUl /> Fichas Registradas en el Sistema</h3>
+        <div className="caja-tabla-header-con-buscador">
+          <h3 className="titulo-lista-fichas" style={{ margin: 0 }}><FaListUl /> Fichas Registradas en el Sistema</h3>
+          
+          {/* --- NUEVA BARRA DE BÚSQUEDA --- */}
+          <div className="contenedor-busqueda-fichas-dinamico">
+            <FaSearch className="icono-buscar-ficha" />
+            <input 
+              type="text"
+              placeholder="Buscar por código de ficha o programa..."
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+              className="input-buscar-fichas-sena"
+            />
+          </div>
+        </div>
         
         {cargando ? (
           <div className="cargando-fichas-txt">Consultando las fichas académicas con MySQL...</div>
@@ -148,73 +135,22 @@ const GestionFichas = () => {
           <table className="tabla-fichas-sena">
             <thead>
               <tr>
-                <th style={{ width: '80px' }}>ID</th>
-                <th style={{ width: '180px' }}>Número de Ficha</th>
+                <th style={{ width: '100px' }}>ID</th>
+                <th style={{ width: '220px' }}>Número de Ficha</th>
                 <th>Programa de Formación Vinculado</th>
-                <th className="txt-centro-ficha" style={{ width: '220px' }}>Acciones</th>
               </tr>
             </thead>
             <tbody>
-              {fichas.length === 0 ? (
+              {fichasFiltradas.length === 0 ? (
                 <tr>
-                  <td colSpan="4" className="fila-fichas-vacia">No hay fichas creadas en la base de datos actualmente.</td>
+                  <td colSpan="3" className="txt-centro-sena fila-vacia">No se encontraron fichas de formación coincidentes.</td>
                 </tr>
               ) : (
-                fichas.map((ficha) => (
+                fichasFiltradas.map((ficha) => (
                   <tr key={ficha.id_ficha}>
                     <td className="txt-id-gris">#{ficha.id_ficha}</td>
-                    
-                    {/* VALIDACIÓN: ¿Esta fila se está editando? */}
-                    {idFichaEditando === ficha.id_ficha ? (
-                      <>
-                        {/* Celda editable del número */}
-                        <td>
-                          <input 
-                            type="number" 
-                            value={editFormData.numero_ficha} 
-                            onChange={(e) => setEditFormData({ ...editFormData, numero_ficha: e.target.value })}
-                            className="input-edicion-celda text-bold-input"
-                          />
-                        </td>
-                        {/* Celda editable del programa */}
-                        <td>
-                          <input 
-                            type="text" 
-                            value={editFormData.nombre} 
-                            onChange={(e) => setEditFormData({ ...editFormData, nombre: e.target.value })}
-                            className="input-edicion-celda"
-                          />
-                        </td>
-                        {/* Botones de guardar/cancelar */}
-                        <td className="txt-centro-ficha">
-                          <div className="caja-botones-acciones">
-                            <button onClick={() => handleGuardarCambios(ficha.id_ficha)} className="btn-accion-tabla guardar-btn" title="Guardar">
-                              <FaSave /> Guardar
-                            </button>
-                            <button onClick={cancelarEdicion} className="btn-accion-tabla cancelar-btn" title="Cancelar">
-                              <FaTimes /> Cancelar
-                            </button>
-                          </div>
-                        </td>
-                      </>
-                    ) : (
-                      <>
-                        {/* Fila en modo lectura normal */}
-                        <td className="txt-numero-ficha-bold">{ficha.numero_ficha}</td>
-                        <td className="txt-nombre-programa-sena">{ficha.nombre}</td>
-                        <td className="txt-centro-ficha">
-                          <div className="caja-botones-acciones">
-                            <button onClick={() => iniciarEdicion(ficha)} className="btn-accion-tabla editar-btn">
-                              <FaEdit /> Editar
-                            </button>
-                            <button onClick={() => handleEliminar(ficha.id_ficha, ficha.numero_ficha)} className="btn-accion-tabla eliminar-btn">
-                              <FaTrash /> Eliminar
-                            </button>
-                          </div>
-                        </td>
-                      </>
-                    )}
-
+                    <td className="txt-numero-ficha-bold">{ficha.numero_ficha}</td>
+                    <td className="txt-nombre-programa-sena">{ficha.nombre}</td>
                   </tr>
                 ))
               )}

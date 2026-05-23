@@ -1,5 +1,6 @@
 const ExcelJS = require('exceljs');
 const personaService = require('./personaService');
+const db = require('../config/conexion_db'); //Importamos la conexión para interactuar con la tabla ficha
 
 // Normaliza valores limpiando espacios y pasándolos a mayúsculas
 const normalizar = (valor) => {
@@ -19,6 +20,47 @@ const procesarExcel = async (filePath, tipo_persona, id_ficha) => {
     if (!worksheet) {
         throw new Error('El archivo Excel está vacío o no tiene hojas.');
     }
+
+    // ============================================================================
+    // NUEVO: EXTRACCIÓN AUTOMÁTICA DE FICHA Y PROGRAMA (SOFIAPLUS CAPTURE)
+    // ============================================================================
+    let idFichaFinal = id_ficha ? Number(id_ficha) : null;
+
+    try {
+        // En Excel de SofiaPlus: Ficha está en C3 y Programa/Denominación en C6
+        const numeroFichaExtraido = worksheet.getCell('C3').value 
+            ? worksheet.getCell('C3').value.toString().trim() 
+            : null;
+            
+        const nombreProgramaExtraido = worksheet.getCell('C6').value 
+            ? worksheet.getCell('C6').value.toString().trim() 
+            : null;
+
+        // Si el archivo efectivamente contiene estos metadatos de SofiaPlus, procesamos la automatización
+        if (numeroFichaExtraido && nombreProgramaExtraido) {
+            console.log(`🛑 [INFO MASIVO] Detectada ficha ${numeroFichaExtraido} en cabecera del Excel.`);
+            
+            // 1. Comprobamos si la ficha ya existe en MySQL
+            const [fichasExistentes] = await db.execute('SELECT id_ficha FROM ficha WHERE numero_ficha = ?', [numeroFichaExtraido]);
+            
+            if (fichasExistentes.length > 0) {
+                // Si existe, capturamos su id_ficha real
+                idFichaFinal = fichasExistentes[0].id_ficha;
+            } else {
+                // Si es nueva, la creamos en caliente directamente en la base de datos
+                console.log(`🛑 [INFO MASIVO] Registrando nueva ficha institucional automáticamente...`);
+                const [nuevaFicha] = await db.execute(
+                    'INSERT INTO ficha (numero_ficha, nombre) VALUES (?, ?)',
+                    [numeroFichaExtraido, nombreProgramaExtraido]
+                );
+                idFichaFinal = nuevaFicha.insertId;
+            }
+        }
+    } catch (errorFicha) {
+        console.error("⚠️ Error no crítico al procesar la autodetectación de ficha:", errorFicha.message);
+        // Si por alguna razón falla el escaneo de cabecera, el sistema continuará con el id_ficha original para no romper la carga
+    }
+    // ============================================================================
 
     let encabezadosIndex = -1;
     let mapaEncabezados = {}; // Guardaremos { 'NUMERO DE DOCUMENTO': 2 (columna B) }
@@ -78,7 +120,7 @@ const procesarExcel = async (filePath, tipo_persona, id_ficha) => {
                 apellidos: normalizar(apellidosRaw),
                 estado: normalizar(estadoRaw),
                 tipo_persona: Number(tipo_persona),
-                id_ficha: id_ficha ? Number(id_ficha) : null
+                id_ficha: idFichaFinal // <-- CAMBIO: Vinculamos el ID final calculado dinámicamente arriba
             });
         }
     });
