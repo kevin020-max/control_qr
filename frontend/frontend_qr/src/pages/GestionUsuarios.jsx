@@ -98,7 +98,7 @@ const GestionUsuarios = () => {
   return (
     <div className="modulo-gestion-roles">
       <div className="encabezado-roles">
-        <h2>Gestión de roles</h2>
+        <h2>Gestión de Usuarios</h2>
         <p>Administre los roles y permisos de los usuarios del sistema</p>
       </div>
 

@@ -117,7 +117,7 @@ const obtenerTipoPersonaTexto = (tipo) => {
             <h1>
             {usuarioObj && usuarioObj.nombres 
               ? `${usuarioObj.nombres} ${usuarioObj.apellidos || ''}` 
-              : 'Admin SENA'}
+              : 'Usuario SENA'}
           </h1>
           <p>
             {id_rol ? obtenerNombreRol(id_rol) : 'Administrador'}
@@ -199,7 +199,9 @@ const obtenerTipoPersonaTexto = (tipo) => {
   {esRutaInicio && (
     <>
     <div className='titulos-contenido'>
-      <h1>Bienvenido</h1>
+      <h1>Bienvenido, {usuarioObj && usuarioObj.nombres 
+              ? `${usuarioObj.nombres} ${usuarioObj.apellidos || ''}` 
+              : 'Usuario SENA'}</h1>
       <p>{fechaHoy}</p>
     </div>
       {/* --- BLOQUE 1: TARJETAS DE RESUMEN --- */}

@@ -153,12 +153,6 @@ INSERT INTO rol_permiso (id_rol, id_permiso) VALUES
 (3, 4),                         -- Instructor ve reportes
 (4, 4);                         -- Coordinador ve reportes
 
--- Fichas de prueba ADSO
-INSERT INTO ficha (numero_ficha, nombre) VALUES 
-('2758231', 'Análisis y Desarrollo de Software (Jornada Mañana)'),
-('2801923', 'Análisis y Desarrollo de Software (Jornada Tarde)'),
-('2910293', 'Sistemas e Informática (Fines de Semana)');
-
 -- Creación de personas de prueba
 INSERT INTO personas (numero_documento, tipo_doc, nombres, apellidos, fecha_registro, tipo_persona, tipo_estado, id_ficha) 
 VALUES 
