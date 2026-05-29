@@ -9,10 +9,7 @@
 
 .encabezado-carga h2 {
   font-size: 24px;
-  color: #111;
-  border-bottom: 2px solid #e5e7eb;
-  padding-bottom: 12px;
-  margin-bottom: 8px;
+  color: #000;
 }
 
 .encabezado-carga p {

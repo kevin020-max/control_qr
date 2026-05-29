@@ -10,13 +10,9 @@
 
 .encabezado-crear h2 {
   font-size: 24px;
-  color: #39A900;
-  border-bottom: 2px solid #e5e7eb;
-  padding-bottom: 12px;
-  margin-bottom: 8px;
+  color: #000;
   display: flex;
   align-items: center;
-  gap: 10px;
 }
 
 .encabezado-crear p {

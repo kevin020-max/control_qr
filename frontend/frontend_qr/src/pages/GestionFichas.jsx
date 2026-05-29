@@ -1,7 +1,7 @@
 // src/pages/GestionFichas.jsx
 import { useState, useEffect } from 'react';
 import api from '../services/api';
-import { FaIdCard, FaPlus, FaCheckCircle, FaExclamationCircle, FaListUl, FaSearch } from 'react-icons/fa';
+import { FaPlus, FaCheckCircle, FaExclamationCircle, FaListUl, FaSearch } from 'react-icons/fa';
 import '../styles/GestionFichas.css';
 
 const GestionFichas = () => {
@@ -64,7 +64,7 @@ const GestionFichas = () => {
   return (
     <div className="modulo-gestion-fichas">
       <div className="encabezado-fichas">
-        <h2><FaIdCard /> Gestión de Fichas SENA</h2>
+        <h2>Gestión de Fichas</h2>
         <p>Consulte las fichas registradas de forma automática o cree nuevos programas de manera manual.</p>
       </div>
 

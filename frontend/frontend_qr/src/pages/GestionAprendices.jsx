@@ -1,7 +1,7 @@
 // src/pages/GestionAprendices.jsx
 import { useState, useEffect } from 'react';
 import api from '../services/api'; 
-import { FaUserGraduate, FaPlus, FaBan, FaCheckCircle, FaGraduationCap, FaFilter, FaExclamationTriangle, FaSearch } from 'react-icons/fa';
+import { FaPlus, FaBan, FaCheckCircle, FaFilter, FaExclamationTriangle, FaSearch } from 'react-icons/fa';
 import '../styles/GestionAprendices.css'; 
 
 const GestionAprendices = () => {
@@ -130,7 +130,7 @@ const GestionAprendices = () => {
   return (
     <div className="modulo-gestion-aprendices">
       <div className="encabezado-aprendices">
-        <h2><FaUserGraduate /> Gestión de Aprendices (Manual)</h2>
+        <h2>Gestión de Aprendices (Manual)</h2>
         <p>Registre y administre el estado de ingreso de los estudiantes vinculados al centro.</p>
       </div>
       
@@ -233,7 +233,6 @@ const GestionAprendices = () => {
                     <td className="txt-nombre-sena">{ap.nombres} {ap.apellidos}</td>
                     <td>
                       <div className="programa-celda">
-                        <FaGraduationCap className="icono-cap-sena" />
                         <span><strong>{ap.numero_ficha}</strong> - {ap.nombre_programa || ap.nombre}</span>
                       </div>
                     </td>

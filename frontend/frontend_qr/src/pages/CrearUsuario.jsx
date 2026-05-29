@@ -1,7 +1,7 @@
 // src/pages/CrearUsuario.jsx
 import { useState } from 'react';
 import api from '../services/api';
-import { FaUserShield, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
+import { FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
 import '../styles/CrearUsuario.css';
 
 const CrearUsuario = () => {
@@ -64,7 +64,7 @@ const CrearUsuario = () => {
   return (
     <div className="modulo-crear-usuario">
       <div className="encabezado-crear">
-        <h2><FaUserShield /> Crear Nuevo Usuario Interno</h2>
+        <h2>Crear Nuevo Usuario Interno</h2>
         <p>Registra las credenciales de acceso. El sistema asignará los permisos institucionales correspondientes según el rol seleccionado.</p>
       </div>
 

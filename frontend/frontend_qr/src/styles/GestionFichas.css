@@ -9,12 +9,7 @@
 
 .encabezado-fichas h2 {
   font-size: 24px;
-  color: #111111;
-  font-weight: 800;
-  margin-bottom: 4px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  color: #000;
 }
 
 .encabezado-fichas p {

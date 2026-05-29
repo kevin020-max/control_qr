@@ -9,12 +9,7 @@
 
 .encabezado-aprendices h2 {
   font-size: 24px;
-  color: #39A900; /* Verde Institucional */
-  font-weight: 800;
-  margin-bottom: 4px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  color: #000;
 }
 
 .encabezado-aprendices p {
