@@ -85,6 +85,179 @@ const generarPdfIngresosHoy = async (outputPath) => {
     });
 };
 
+const obtenerEstadisticas = async (
+    periodo = 'semana',
+    tipoPersona = 'general'
+) => {
+
+    let filtroFecha = `
+        DATE_SUB(
+            CURDATE(),
+            INTERVAL 7 DAY
+        )
+    `;
+
+    if (periodo === 'mes') {
+
+        filtroFecha = `
+            DATE_SUB(
+                CURDATE(),
+                INTERVAL 1 MONTH
+            )
+        `;
+    }
+
+    if (periodo === 'trimestre') {
+
+        filtroFecha = `
+            DATE_SUB(
+                CURDATE(),
+                INTERVAL 3 MONTH
+            )
+        `;
+    }
+
+    let filtroTipo = '';
+
+    if (tipoPersona === 'aprendiz') {
+
+        filtroTipo =
+            'AND p.tipo_persona = 1';
+    }
+
+    if (tipoPersona === 'visitante') {
+
+        filtroTipo =
+            'AND p.tipo_persona = 4';
+    }
+
+    const [[totalActivos]] =
+        await pool.query(`
+            SELECT COUNT(*) AS total
+            FROM personas p
+            WHERE p.tipo_estado = 1
+            ${filtroTipo}
+        `);
+
+    const [[ingresos]] =
+        await pool.query(`
+            SELECT COUNT(*) AS total
+            FROM control_acceso c
+            INNER JOIN personas p
+                ON p.id_persona =
+                c.id_persona
+            WHERE c.fecha_entrada >=
+            ${filtroFecha}
+            ${filtroTipo}
+        `);
+
+    const [[salidas]] =
+        await pool.query(`
+            SELECT COUNT(*) AS total
+            FROM control_acceso c
+            INNER JOIN personas p
+                ON p.id_persona =
+                c.id_persona
+            WHERE c.fecha_salida IS NOT NULL
+            AND c.fecha_salida >=
+            ${filtroFecha}
+            ${filtroTipo}
+        `);
+
+    const [[promedioDiario]] =
+        await pool.query(`
+            SELECT ROUND(
+                COUNT(*) / 30
+            ) AS total
+            FROM control_acceso c
+            INNER JOIN personas p
+                ON p.id_persona =
+                c.id_persona
+            WHERE c.fecha_entrada >=
+            ${filtroFecha}
+            ${filtroTipo}
+        `);
+
+    const [[aprendicesHoy]] =
+        await pool.query(`
+            SELECT COUNT(*) AS total
+            FROM control_acceso c
+            INNER JOIN personas p
+                ON p.id_persona =
+                c.id_persona
+            WHERE DATE(c.fecha_entrada)
+                = CURDATE()
+            AND p.tipo_persona = 1
+        `);
+
+    const [[instructoresHoy]] =
+        await pool.query(`
+            SELECT COUNT(*) AS total
+            FROM control_acceso c
+            INNER JOIN personas p
+                ON p.id_persona =
+                c.id_persona
+            WHERE DATE(c.fecha_entrada)
+                = CURDATE()
+            AND p.tipo_persona = 2
+        `);
+
+    const [[funcionariosHoy]] =
+        await pool.query(`
+            SELECT COUNT(*) AS total
+            FROM control_acceso c
+            INNER JOIN personas p
+                ON p.id_persona =
+                c.id_persona
+            WHERE DATE(c.fecha_entrada)
+                = CURDATE()
+            AND p.tipo_persona = 3
+        `);
+
+    const [[visitantesHoy]] =
+        await pool.query(`
+            SELECT COUNT(*) AS total
+            FROM control_acceso c
+            INNER JOIN personas p
+                ON p.id_persona =
+                c.id_persona
+            WHERE DATE(c.fecha_entrada)
+                = CURDATE()
+            AND p.tipo_persona = 4
+        `);
+
+    return {
+
+        totalActivos:
+            totalActivos.total,
+
+        ingresosTrimestre:
+            ingresos.total,
+
+        salidasTrimestre:
+            salidas.total,
+
+        promedioDiario:
+            promedioDiario.total,
+
+        resumenHoy: {
+
+            aprendices:
+                aprendicesHoy.total,
+
+            instructores:
+                instructoresHoy.total,
+
+            funcionarios:
+                funcionariosHoy.total,
+
+            visitantes:
+                visitantesHoy.total
+        }
+    };
+};
+
 module.exports = {
-    generarPdfIngresosHoy
+    generarPdfIngresosHoy,
+    obtenerEstadisticas
 };
