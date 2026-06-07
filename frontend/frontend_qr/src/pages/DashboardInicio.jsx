@@ -96,6 +96,9 @@ const DashboardInicio = () => {
   const esInstructor =
     id_rol === 3;
 
+  const esCoordinador =
+    id_rol === 4;
+
   useEffect(() => {
 
     if (

@@ -60,13 +60,15 @@ const obtenerEstadisticas = catchAsync(
 
         const {
             periodo,
-            tipoPersona
+            tipoPersona,
+            idRol
         } = req.query;
 
         const estadisticas =
             await reporteService.obtenerEstadisticas(
                 periodo,
-                tipoPersona
+                tipoPersona,
+                Number(idRol)
             );
 
         res.status(200).json({

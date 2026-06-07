@@ -87,7 +87,8 @@ const generarPdfIngresosHoy = async (outputPath) => {
 
 const obtenerEstadisticas = async (
     periodo = 'semana',
-    tipoPersona = 'general'
+    tipoPersona = 'general',
+    idRol = null
 ) => {
 
     let filtroFecha = `
@@ -119,16 +120,49 @@ const obtenerEstadisticas = async (
 
     let filtroTipo = '';
 
+    if (tipoPersona === 'general') {
+
+        if (idRol === 1) {
+
+            filtroTipo =
+                'AND p.tipo_persona IN (1,4)';
+
+        }
+
+        if (idRol === 4) {
+
+            filtroTipo = '';
+
+        }
+
+    }
+
     if (tipoPersona === 'aprendiz') {
 
         filtroTipo =
             'AND p.tipo_persona = 1';
+
+    }
+
+    if (tipoPersona === 'instructor') {
+
+        filtroTipo =
+            'AND p.tipo_persona = 2';
+
+    }
+
+    if (tipoPersona === 'funcionario') {
+
+        filtroTipo =
+            'AND p.tipo_persona = 3';
+
     }
 
     if (tipoPersona === 'visitante') {
 
         filtroTipo =
             'AND p.tipo_persona = 4';
+
     }
 
     const [[totalActivos]] =

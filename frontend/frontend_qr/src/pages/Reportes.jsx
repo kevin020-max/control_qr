@@ -25,8 +25,21 @@ const Reportes = () => {
 const [cargandoPdf, setCargandoPdf] = useState(false);
 
 const [periodo, setPeriodo] = useState('semana');
+const textoPeriodo = {
+  semana: 'Semana',
+  mes: 'Mes',
+  trimestre: 'Trimestre'
+};
 
 const [tipoPersona, setTipoPersona] = useState('general');
+
+const usuario =
+  JSON.parse(
+    localStorage.getItem('usuario')
+  );
+
+const esCoordinador =
+  usuario?.id_rol === 4;
 
 useEffect(() => {
 
@@ -34,15 +47,21 @@ useEffect(() => {
 
     try {
 
-      const res = await api.get(
-        '/reportes/estadisticas',
-        {
-          params: {
-            periodo,
-            tipoPersona
-          }
-        }
-      );
+      const usuario =
+  JSON.parse(
+    localStorage.getItem('usuario')
+  );
+
+  const res = await api.get(
+    '/reportes/estadisticas',
+    {
+      params: {
+        periodo,
+        tipoPersona,
+        idRol: usuario?.id_rol
+      }
+    }
+  );
 
       setStats(
         res.data.data
@@ -145,13 +164,16 @@ const manejarDescargaPDF = async () => {
           </select>
         </div>
         <div className="filtro-select">
+
           <FaFilter className="icono-filtro" />
+
           <select
             value={tipoPersona}
             onChange={(e) =>
               setTipoPersona(e.target.value)
             }
           >
+
             <option value="general">
               General
             </option>
@@ -160,10 +182,24 @@ const manejarDescargaPDF = async () => {
               Solo Aprendices
             </option>
 
+            {esCoordinador && (
+              <option value="instructor">
+                Solo Instructores
+              </option>
+            )}
+
+            {esCoordinador && (
+              <option value="funcionario">
+                Solo Funcionarios
+              </option>
+            )}
+
             <option value="visitante">
               Solo Visitantes
             </option>
+
           </select>
+
         </div>
       </div>
 
@@ -178,14 +214,14 @@ const manejarDescargaPDF = async () => {
         </div>
         <div className="tarjeta-metrica">
           <div>
-            <p>Ingresos por Trimestre</p>
+            <p>Ingresos por {textoPeriodo[periodo]}</p>
             <h3>{stats.ingresosTrimestre}</h3>
           </div>
           <div className="icono-caja verde-sena"><FaSignInAlt /></div>
         </div>
         <div className="tarjeta-metrica">
           <div>
-            <p>Salidas por Trimestre</p>
+            <p>Salidas por {textoPeriodo[periodo]}</p>
             <h3>{stats.salidasTrimestre}</h3>
           </div>
           <div className="icono-caja verde-sena"><FaSignOutAlt /></div>
