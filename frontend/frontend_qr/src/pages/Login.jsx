@@ -52,6 +52,7 @@ const Login = () => {
     <div style={estilos.contenedor}>
       <div style={estilos.tarjeta}>
         <h2 style={estilos.titulo}>Control de Acceso</h2>
+      
         
         {/* Si hay un error, mostramos este cuadro rojo */}
         {errorBackend && <div style={estilos.cajaError}>{errorBackend}</div>}
@@ -94,9 +95,9 @@ const Login = () => {
 
 // 6. ESTILOS BÁSICOS
 const estilos = {
-  contenedor: { height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#f3f4f6' },
+  contenedor: { height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#38a104' },
   tarjeta: { backgroundColor: 'white', padding: '40px', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', width: '100%', maxWidth: '400px' },
-  titulo: { textAlign: 'center', color: '#39A900', marginBottom: '20px' }, // Verde SENA
+  titulo: { textAlign: 'center', color: '#000000', marginBottom: '20px' }, // Verde SENA
   grupoInput: { display: 'flex', alignItems: 'center', border: '1px solid #ccc', borderRadius: '4px', marginBottom: '15px', padding: '10px' },
   icono: { color: '#888', marginRight: '10px' },
   input: { border: 'none', outline: 'none', width: '100%', fontSize: '16px' },

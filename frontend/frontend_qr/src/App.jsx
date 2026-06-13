@@ -1,12 +1,12 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 
-// Páginas de acceso y generales
+// Páginas generales
 import Login from './pages/Login';
 import DashboardInicio from './pages/DashboardInicio';
-import GestionUsuarios from './pages/GestionUsuarios';
 
-// Páginas operativas
+// Admin
+import GestionUsuarios from './pages/GestionUsuarios';
 import Escaner from './pages/Escaner';
 import Visitantes from './pages/Visitantes';
 import CargaMasiva from './pages/CargaMasiva';
@@ -16,56 +16,128 @@ import Alertas from './pages/Alertas';
 import RegistroAccesos from './pages/RegistroAccesos';
 import GestionFichas from './pages/GestionFichas';
 
-// NUEVAS páginas para los otros roles
+// Reportes generales
 import Reportes from './pages/Reportes';
 
-// Nuestro guardián de seguridad
+// NUEVA página SOLO instructor
+import AsistenciaInstructor from './pages/AsistenciaInstructor';
+
+// Seguridad
 import RutaProtegida from './components/RutaProtegida';
 
 function App() {
-  return (
-    <Router>
-      <Routes>
-        {/* ================= RUTA PÚBLICA ================= */}
-        <Route path="/login" element={<Login />} />
 
-        {/* ================= RUTAS PROTEGIDAS ================= */}
-        
-        {/* 1. GRUPO OPERARIO (Rol 2) Y ADMIN (Rol 1) */}
-        {/* El Administrador también tiene permiso de ver esto por si necesita operar el escáner */}
-        <Route element={<RutaProtegida rolesPermitidos={[1, 2, 3, 4]} />}>
-          
-          {/* El Dashboard actúa como la plantilla (Layout) base para este grupo */}
-          <Route path="/dashboard" element={<DashboardInicio />}>
+  return (
+
+    <Router>
+
+      <Routes>
+
+        <Route
+          path="/login"
+          element={<Login />}
+        />
+
+        <Route
+          element={
+            <RutaProtegida
+              rolesPermitidos={[1, 2, 3, 4]}
+            />
+          }
+        >
+
+          <Route
+            path="/dashboard"
+            element={<DashboardInicio />}
+          >
+
+            {/* OPERARIO */}
             <Route path="escaner" element={<Escaner />} />
             <Route path="visitantes" element={<Visitantes />} />
             <Route path="alertas" element={<Alertas />} />
             <Route path="registro-accesos" element={<RegistroAccesos />} />
 
-            {/* ¡NUEVO! Sub-rutas EXCLUSIVAS del Administrador dentro del Dashboard */}
-            <Route element={<RutaProtegida rolesPermitidos={[1]} />}>
-              <Route path="carga-masiva" element={<CargaMasiva />} />
-              <Route path="crear-usuario" element={<CrearUsuario />} />
-              <Route path="gestion-usuarios" element={<GestionUsuarios />} />
-              <Route path="gestion-aprendices" element={<GestionAprendices />} />
-              <Route path="gestion-fichas" element={<GestionFichas />} />
+            {/* ADMIN */}
+            <Route
+              element={
+                <RutaProtegida
+                  rolesPermitidos={[1]}
+                />
+              }
+            >
+
+              <Route
+                path="carga-masiva"
+                element={<CargaMasiva />}
+              />
+
+              <Route
+                path="crear-usuario"
+                element={<CrearUsuario />}
+              />
+
+              <Route
+                path="gestion-usuarios"
+                element={<GestionUsuarios />}
+              />
+
+              <Route
+                path="gestion-aprendices"
+                element={<GestionAprendices />}
+              />
+
+              <Route
+                path="gestion-fichas"
+                element={<GestionFichas />}
+              />
+
             </Route>
 
-            {/* 3. GRUPO DE INSTRUCTORES (3), COORDINADORES (4) Y ADMIN (1) */}
-            <Route element={<RutaProtegida rolesPermitidos={[1, 3, 4]} />}>
-              <Route path="reportes" element={<Reportes />} />
+            {/* ADMIN Y COORDINADOR */}
+            <Route
+              element={
+                <RutaProtegida
+                  rolesPermitidos={[1, 4]}
+                />
+              }
+            >
+
+              <Route
+                path="reportes"
+                element={<Reportes />}
+              />
+
             </Route>
+
+            {/* SOLO INSTRUCTOR */}
+            <Route
+              element={
+                <RutaProtegida
+                  rolesPermitidos={[3]}
+                />
+              }
+            >
+
+              <Route
+                path="asistencia"
+                element={<AsistenciaInstructor />}
+              />
+
+            </Route>
+
           </Route>
-          
+
         </Route>
 
-        
+        <Route
+          path="*"
+          element={<Navigate to="/login" />}
+        />
 
-        {/* ================= RUTA POR DEFECTO ================= */}
-        {/* Cualquier otra URL extraña va al Login para que el sistema decida qué hacer */}
-        <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
+
     </Router>
+
   );
 }
 
