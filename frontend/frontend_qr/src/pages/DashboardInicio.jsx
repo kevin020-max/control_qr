@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 
+
 import {
   useNavigate,
   Outlet,
@@ -23,7 +24,9 @@ import {
   FaUserGraduate,
   FaBell,
   FaClipboardList,
-  FaHashtag
+  FaHashtag,
+  FaBars,
+  FaTimes
 } from 'react-icons/fa';
 
 import api from '../services/api';
@@ -184,11 +187,20 @@ const DashboardInicio = () => {
     location.pathname === '/dashboard' ||
     location.pathname === '/dashboard/';
 
+    const [menuAbierto, setMenuAbierto] = useState(false);
+
   return (
 
     <div className='contenedor'>
 
       <header>
+
+      <button
+          className='btn-menu'
+          onClick={() => setMenuAbierto(true)}
+        >
+          <FaBars />
+      </button>
 
         <div className='logo-sena'>
 
@@ -240,9 +252,25 @@ const DashboardInicio = () => {
 
       </header>
 
+          {
+      menuAbierto && (
+        <div
+          className='overlay-menu'
+          onClick={() => setMenuAbierto(false)}
+        />
+      )
+    }
+
       <div className='cuerpo-dashboard'>
 
-        <aside>
+        <aside className={menuAbierto ? 'menu-abierto' : ''}>
+
+          <button
+          className='btn-cerrar-menu'
+          onClick={() => setMenuAbierto(false)}
+        >
+          <FaTimes />
+        </button>
 
           <nav className='menu'>
 
