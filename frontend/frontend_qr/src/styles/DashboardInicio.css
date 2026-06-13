@@ -1,0 +1,449 @@
+.contenedor {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+}
+
+header {
+  height: 132px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  align-items: center;
+  border-bottom: solid 1px #e6e6e6;
+}
+
+.titulos h1 {
+  font-size: 40px;
+  font-weight: bold;
+  color: #000;
+}
+
+.titulos h2 {
+  font-size: 24px;
+  color: #878787;
+  font-weight: 400;
+}
+
+.logo-sena {
+  display: flex;
+}
+
+.logo-sena img {
+  height: 92px;
+  width: 94px;
+  margin-right: 16px;
+}
+
+.logout {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+.logout button {
+  width: 117px;
+  height: 48px;
+  background-color: #ff0000;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.identidad {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.identidad h1 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #000;
+}
+
+.identidad p {
+  font-size: 16px;
+  color: #878787;
+  font-weight: 400;
+}
+
+aside {
+  padding: 32px;
+  width: 391px;
+  border-right: solid 1px #e6e6e6;
+  height: 100%;
+  flex-shrink: 0;   /* Evita que se aplaste */
+  overflow-y: auto; /* Si el menú tiene muchas opciones, él mismo hace scroll */
+  background-color: #fff;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Estilo base del enlace */
+.link {
+  height: 70px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 16px; /* Un poco de espacio interno para que el fondo se vea bien */
+  font-size: 20px;
+  font-weight: bold;
+  color: #000;
+  text-decoration: none;
+  border-radius: 12px; /* Bordes redondeados como en Figma */
+  transition: all 0.3s ease;
+}
+
+/* LA CLAVE: El estado activo */
+.link.active {
+  background-color: #39A900; /* Verde SENA */
+  color: #ffffff;            /* Texto blanco para que resalte */
+}
+
+/* Opcional: Cambiar el color del ícono cuando esté activo */
+.link.active .icono-link {
+  color: #ffffff;
+}
+
+/* Efecto Hover para cuando pasas el mouse pero no has dado clic */
+.link:hover:not(.active) {
+  background-color: #e6e6e6;
+}
+
+.icono-link{
+  width: 32px;
+  height: 32px;
+}
+
+/* 1. El contenedor principal ocupa toda la pantalla y no permite scroll */
+.contenedor {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Esto bloquea el scroll de toda la página */
+}
+
+/* 2. El área que está debajo del Header (Sidebar + Contenido) */
+.cuerpo-dashboard {
+  display: flex;
+  flex: 1;         /* Ocupa todo el alto restante después del header */
+  overflow: hidden; /* Bloquea scroll aquí también */
+  width: 100%;
+}
+
+/* 4. EL PROTAGONISTA: El contenedor de contenido */
+.contenido {
+  flex: 1;          /* Ocupa todo el ancho restante */
+  height: 100%;     /* Ocupa todo el alto del cuerpo-dashboard */
+  padding: 40px;
+  background-color: #f9fafb;
+  gap: 24px;
+  display: flex;
+  flex-direction: column;
+  
+  /* ESTAS DOS LÍNEAS HACEN LA MAGIA */
+  overflow-y: auto;   /* Activa el scroll solo aquí cuando el contenido sobresale */
+  overflow-x: hidden; /* Evita que aparezca la barra de abajo */
+}
+
+.titulos-contenido p {
+  font-size: 16px;
+  color: #878787;
+}
+
+.grid-tarjetas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(222px, 1fr));
+  gap: 24px;
+}
+
+.tarjeta {
+  width: 100%;
+  height: 109px;
+  padding: 24px 32px;
+  background-color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: solid 1px #e6e6e6;
+  border-radius: 10px;
+}
+
+.icono {
+  width: 24px;
+  height: 24px;
+  color: #39A900;
+}
+
+.tarjeta p {
+  font-size: 14px;
+  color: #878787;
+}
+
+.tarjeta h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #000;
+}
+
+.actividad-reciente {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background-color: #fff;
+  padding: 24px 32px;
+  border: solid 1px #e6e6e6;
+  border-radius: 10px;
+}
+
+.item-lista {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background-color: #f9fafb;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.icono-lista {
+  width: 24px;
+  height: 24px;
+  color: #39A900;
+}
+
+.acceso-directo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.link-ver-todos {
+  font-size: 16px;
+  color: #39A900;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* ==================================================
+   RESPONSIVE MOVILES
+   ================================================== */
+
+.btn-menu {
+  display: none;
+}
+
+/* Overlay oscuro */
+
+.overlay-menu {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.4);
+  z-index: 999;
+}
+
+/* ==================================================
+   TABLETS Y MOVILES
+   ================================================== */
+
+@media screen and (max-width: 768px) {
+
+  /* CAMBIO GRANDE:
+     Header pasa a ser más compacto
+  */
+
+  header {
+    height: auto;
+    min-height: 80px;
+    padding: 12px 16px;
+  }
+
+  .btn-menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: transparent;
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  /* CAMBIO GRANDE:
+     Sidebar oculto por defecto
+  */
+
+  aside {
+    position: fixed;
+    left: -100%;
+    top: 0;
+    width: 280px;
+    height: 100vh;
+    z-index: 1000;
+    background: white;
+    transition: .3s;
+    border-right: none;
+    box-shadow: 0 0 20px rgba(0,0,0,.2);
+  }
+
+  .menu-abierto {
+    left: 0;
+  }
+
+  /* CAMBIO GRANDE:
+     Botón cerrar visible solo móvil
+  */
+
+  .btn-cerrar-menu {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 24px;
+    margin-bottom: 20px;
+    cursor: pointer;
+  }
+
+  /* Logo */
+
+  .logo-sena img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .titulos h1 {
+    font-size: 24px;
+  }
+
+  .titulos h2 {
+    font-size: 14px;
+  }
+
+  /* CAMBIO GRANDE:
+     Ocultamos rol para ahorrar espacio
+  */
+
+  .identidad p {
+    display: none;
+  }
+
+  .identidad h1 {
+    font-size: 14px;
+    text-align: right;
+  }
+
+  .logout {
+    gap: 10px;
+  }
+
+  .logout button {
+    width: 90px;
+    height: 40px;
+    font-size: 14px;
+  }
+
+  /* CAMBIO GRANDE:
+     Menos padding lateral
+  */
+
+  .contenido {
+    padding: 16px;
+  }
+
+  .titulos-contenido h1 {
+    font-size: 22px;
+  }
+
+  .titulos-contenido p {
+    font-size: 14px;
+  }
+
+  /* CAMBIO GRANDE:
+     Tarjetas 1 columna
+  */
+
+  .grid-tarjetas {
+    grid-template-columns: 1fr;
+  }
+
+  .tarjeta {
+    padding: 16px;
+    height: auto;
+    min-height: 90px;
+  }
+
+  .tarjeta h2 {
+    font-size: 20px;
+  }
+
+  .tarjeta p {
+    font-size: 13px;
+  }
+
+  /* Actividad reciente */
+
+  .actividad-reciente {
+    padding: 16px;
+  }
+
+  .acceso-directo {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .item-lista {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .item-lista h4 {
+    font-size: 14px;
+  }
+
+  .item-lista p {
+    font-size: 12px;
+  }
+
+  .icono-lista {
+    width: 18px;
+    height: 18px;
+  }
+
+  .link {
+    height: 55px;
+    font-size: 16px;
+  }
+
+  .icono-link {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* ==================================================
+   DESKTOP
+   ================================================== */
+
+@media screen and (min-width: 769px) {
+
+  .btn-cerrar-menu {
+    display: none;
+  }
+
+}

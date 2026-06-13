@@ -1,0 +1,97 @@
+/* src/styles/Alertas.css */
+
+.modulo-alertas {
+  width: 100%;
+}
+
+.titulo-alertas {
+  font-size: 24px;
+  color: #000000;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.subtitulo-alertas, .subtitulo-vacio-top {
+  font-size: 14px;
+  color: #878787;
+  margin-bottom: 24px;
+}
+
+/* --- ESTILOS PANTALLA VACÍA (FIGMA) --- */
+.tarjeta-alertas-vacia {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.caja-vacia-blanca {
+  background-color: #ffffff;
+  border: 1px solid #e6e6e6;
+  border-radius: 12px;
+  padding: 48px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.01);
+}
+
+.icono-check-vacio {
+  font-size: 56px;
+  color: #39A900; /* Verde institucional SENA */
+}
+
+.texto-vacio-alertas {
+  font-size: 16px;
+  color: #878787;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* --- ESTILOS CUANDO HAY ALERTAS ACTIVAS --- */
+.contenedor-alertas-lista {
+  display: flex;
+  flex-direction: column;
+}
+
+.alerta-card-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.alerta-card-box.advertencia {
+  background-color: #fffbeb;
+  border-left: 6px solid #d97706;
+  color: #92400e;
+}
+
+.alerta-card-box.critica {
+  background-color: #fef2f2;
+  border-left: 6px solid #dc2626;
+  color: #991b1b;
+}
+
+.alerta-info-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+}
+
+.icono-alerta-sena {
+  font-size: 18px;
+}
+
+.alerta-tiempo-marca {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
