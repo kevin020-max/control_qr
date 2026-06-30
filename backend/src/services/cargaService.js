@@ -26,39 +26,60 @@ const procesarExcel = async (filePath, tipo_persona, id_ficha) => {
     // ============================================================================
     let idFichaFinal = id_ficha ? Number(id_ficha) : null;
 
-    try {
-        // En Excel de SofiaPlus: Ficha está en C3 y Programa/Denominación en C6
-        const numeroFichaExtraido = worksheet.getCell('C3').value 
-            ? worksheet.getCell('C3').value.toString().trim() 
-            : null;
-            
-        const nombreProgramaExtraido = worksheet.getCell('C6').value 
-            ? worksheet.getCell('C6').value.toString().trim() 
-            : null;
+    // Solo los aprendices crean o asocian fichas automáticamente
+    if (Number(tipo_persona) === 1) {
 
-        // Si el archivo efectivamente contiene estos metadatos de SofiaPlus, procesamos la automatización
-        if (numeroFichaExtraido && nombreProgramaExtraido) {
-            console.log(`🛑 [INFO MASIVO] Detectada ficha ${numeroFichaExtraido} en cabecera del Excel.`);
-            
-            // 1. Comprobamos si la ficha ya existe en MySQL
-            const [fichasExistentes] = await db.execute('SELECT id_ficha FROM ficha WHERE numero_ficha = ?', [numeroFichaExtraido]);
-            
-            if (fichasExistentes.length > 0) {
-                // Si existe, capturamos su id_ficha real
-                idFichaFinal = fichasExistentes[0].id_ficha;
-            } else {
-                // Si es nueva, la creamos en caliente directamente en la base de datos
-                console.log(`🛑 [INFO MASIVO] Registrando nueva ficha institucional automáticamente...`);
-                const [nuevaFicha] = await db.execute(
-                    'INSERT INTO ficha (numero_ficha, nombre) VALUES (?, ?)',
-                    [numeroFichaExtraido, nombreProgramaExtraido]
+        try {
+
+            // En Excel de SofiaPlus: Ficha está en C3 y Programa/Denominación en C6
+            const numeroFichaExtraido = worksheet.getCell('C3').value
+                ? worksheet.getCell('C3').value.toString().trim()
+                : null;
+
+            const nombreProgramaExtraido = worksheet.getCell('C6').value
+                ? worksheet.getCell('C6').value.toString().trim()
+                : null;
+
+            // Si el archivo contiene los datos de la ficha, se procesa automáticamente
+            if (numeroFichaExtraido && nombreProgramaExtraido) {
+
+                console.log(`🛑 [INFO MASIVO] Detectada ficha ${numeroFichaExtraido} en cabecera del Excel.`);
+
+                // Verificar si la ficha ya existe
+                const [fichasExistentes] = await db.execute(
+                    'SELECT id_ficha FROM ficha WHERE numero_ficha = ?',
+                    [numeroFichaExtraido]
                 );
-                idFichaFinal = nuevaFicha.insertId;
+
+                if (fichasExistentes.length > 0) {
+
+                    // Si existe, usamos su id
+                    idFichaFinal = fichasExistentes[0].id_ficha;
+
+                } else {
+
+                    // Si no existe, la creamos automáticamente
+                    console.log('🛑 [INFO MASIVO] Registrando nueva ficha institucional automáticamente...');
+
+                    const [nuevaFicha] = await db.execute(
+                        'INSERT INTO ficha (numero_ficha, nombre) VALUES (?, ?)',
+                        [numeroFichaExtraido, nombreProgramaExtraido]
+                    );
+
+                    idFichaFinal = nuevaFicha.insertId;
+                }
             }
+
+        } catch (errorFicha) {
+
+            console.error(
+                '⚠️ Error no crítico al procesar la autodetectación de ficha:',
+                errorFicha.message
+            );
+
+            // Si falla esta parte, la carga continúa normalmente
         }
-    } catch (errorFicha) {
-        console.error("⚠️ Error no crítico al procesar la autodetectación de ficha:", errorFicha.message);
-        // Si por alguna razón falla el escaneo de cabecera, el sistema continuará con el id_ficha original para no romper la carga
+
     }
     // ============================================================================
 

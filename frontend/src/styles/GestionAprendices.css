@@ -1,0 +1,421 @@
+/* src/styles/GestionAprendices.css */
+
+.modulo-gestion-aprendices {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.encabezado-aprendices h2 {
+  font-size: 24px;
+  color: #000;
+}
+
+.encabezado-aprendices p {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* --- TARJETAS CONTENEDORAS --- */
+.tarjeta-panel-sena {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.01);
+}
+
+.tarjeta-panel-sena h3 {
+  font-size: 18px;
+  color: #111111;
+  font-weight: 800;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+/* --- FORMULARIO HORIZONTAL (FIGMA) --- */
+.formulario-horizontal-sena {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+}
+
+.input-tabla-sena {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  background-color: #ffffff;
+  color: #333333;
+  flex: 1; /* Distribuye el espacio sobrante por igual */
+  min-width: 0;
+}
+
+.input-tabla-sena:focus {
+  border-color: #39A900;
+}
+
+.input-tabla-sena.select-doc {
+  flex: 0 0 80px; /* Tamaño fijo pequeño para el tipo de documento CC/TI */
+}
+
+.input-tabla-sena.select-ficha-dinamico {
+  flex: 2; /* Le da el doble de espacio al dropdown de fichas por los nombres largos */
+}
+
+.btn-sena-agregar {
+  padding: 12px 24px;
+  background-color: #39A900;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color 0.15s;
+}
+
+.btn-sena-agregar:hover {
+  background-color: #2b7d00;
+}
+
+/* --- ESTILOS DE LA TABLA DIRECTORIO --- */
+.tabla-gestion-sena {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.tabla-gestion-sena th {
+  background-color: #f9fafb;
+  padding: 16px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #111111;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tabla-gestion-sena td {
+  padding: 16px 20px;
+  font-size: 14px;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tabla-gestion-sena tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.programa-celda {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icono-cap-sena {
+  color: #6b7280;
+  font-size: 16px;
+}
+
+/* Badges de Estado */
+.badge-sena-status {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.badge-sena-status.activo { background-color: #dcfce7; color: #16a34a; }
+.badge-sena-status.inactivo { background-color: #fee2e2; color: #dc2626; }
+
+/* Botones de acción en tabla */
+.btn-tabla-sena-accion {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.btn-tabla-sena-accion.bloquear { background-color: #e63946; color: white; }
+.btn-tabla-sena-accion.bloquear:hover { background-color: #b81d24; }
+.btn-tabla-sena-accion.restaurar { background-color: #39A900; color: white; }
+.btn-tabla-sena-accion.restaurar:hover { background-color: #2b7d00; }
+
+/* Fila inactiva color de fondo suave */
+.fila-desactivada {
+  background-color: #fcf8f8;
+}
+
+/* Clases auxiliares */
+.txt-centro-sena { text-align: center !important; }
+.txt-documento-sena { font-weight: 700; color: #111111; }
+.txt-nombre-sena { font-weight: 500; }
+.fila-vacia { padding: 32px !important; color: #6b7280; font-style: italic; }
+.cargando-tabla-sena { padding: 48px; text-align: center; color: #6b7280; font-weight: 500; }
+
+/* Alertas */
+.alerta-aprendices {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 15px;
+}
+.alerta-aprendices.exito { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+.alerta-aprendices.error { background-color: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+
+/* Responsivo para pantallas pequeñas */
+@media (max-width: 850px) {
+  .formulario-horizontal-sena {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  .input-tabla-sena.select-doc {
+    flex: none;
+    width: 100%;
+  }
+}
+
+/* --- NUEVOS AJUSTES PARA COMPONENTES DE FILTRADO Y MODAL --- */
+
+.caja-tabla-header-con-filtro {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.contenedor-filtro-sena-fichas {
+  display: flex;
+  align-items: center;
+  background-color: #f9fafb;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 0 12px;
+  gap: 8px;
+  width: 100%;
+  max-width: 340px;
+}
+
+.icono-filtro-input {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.select-filtro-ficha-tabla {
+  border: none;
+  background: transparent;
+  padding: 10px 4px;
+  font-size: 14px;
+  color: #374151;
+  outline: none;
+  width: 100%;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* --- OVERLAY & MODAL STRUCTURE SHADOW DOM --- */
+.overlay-modal-sena {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000; 
+  animation: fadeInModal 0.2s ease-out;
+}
+
+.tarjeta-modal-sena {
+  background-color: #ffffff;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  text-align: left;
+  animation: scaleUpModal 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.encabezado-modal-alerta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  color: white;
+}
+
+.encabezado-modal-alerta.alerta-roja { background-color: #dc2626; }
+.encabezado-modal-alerta.alerta-verde { background-color: #39A900; }
+
+.icono-modal-sena-aviso {
+  font-size: 22px;
+}
+
+.encabezado-modal-alerta h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.cuerpo-modal-sena {
+  padding: 20px;
+  color: #374151;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.info-usuario-modal-caja {
+  background-color: #f9fafb;
+  border-left: 4px solid #39A900;
+  padding: 12px;
+  border-radius: 0 6px 6px 0;
+  margin: 14px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-usuario-modal-caja strong {
+  font-size: 16px;
+  color: #111827;
+}
+
+.info-usuario-modal-caja span {
+  font-size: 13px;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.txt-advertencia-sub {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 10px;
+  background-color: #fffbeb;
+  padding: 8px 10px;
+  border-radius: 4px;
+  border: 1px solid #fef3c7;
+}
+
+.pie-modal-sena {
+  background-color: #f3f4f6;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.btn-modal-sena-cancelar {
+  background-color: #e5e7eb;
+  color: #374151;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+.btn-modal-sena-cancelar:hover { background-color: #d1d5db; }
+
+.btn-modal-sena-confirmar {
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.btn-modal-sena-confirmar.confirmar-bloqueo { background-color: #dc2626; }
+.btn-modal-sena-confirmar.confirmar-bloqueo:hover { background-color: #b91c1c; }
+
+.btn-modal-sena-confirmar.confirmar-activacion { background-color: #39A900; }
+.btn-modal-sena-confirmar.confirmar-activacion:hover { background-color: #2b7d00; }
+
+@keyframes fadeInModal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUpModal {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* --- NUEVOS CONTROLADORES DE BÚSQUEDA Y FILTRADO COMBINADO --- */
+
+.grupo-controles-filtrado-aprendices {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  max-width: 600px; /* Le da el espacio justo a los dos buscadores juntos */
+  justify-content: flex-end;
+}
+
+.contenedor-busqueda-individual-sena {
+  display: flex;
+  align-items: center;
+  background-color: #f9fafb;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 0 12px;
+  gap: 8px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.icono-buscar-input-aprendiz {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.input-buscar-individual-aprendiz {
+  border: none;
+  background: transparent;
+  padding: 10px 4px;
+  font-size: 14px;
+  color: #374151;
+  outline: none;
+  width: 100%;
+}
+
+.input-buscar-individual-aprendiz::placeholder {
+  color: #9ca3af;
+}
+
+/* Ajuste responsive por si la pantalla se achica */
+@media (max-width: 850px) {
+  .caja-tabla-header-con-filtro {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .grupo-controles-filtrado-aprendices {
+    flex-direction: column;
+    align-items: stretch;
+    max-width: 100%;
+  }
+  .contenedor-busqueda-individual-sena, 
+  .contenedor-filtro-sena-fichas {
+    max-width: 100%;
+  }
+}

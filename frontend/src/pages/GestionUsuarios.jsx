@@ -136,7 +136,7 @@ const GestionUsuarios = () => {
             <FaUsers />
           </div>
           <div>
-            <h3>Instructor y Funcionario</h3>
+            <h3>Instructores</h3>
             <p>Consultas y reportes ({conteoRoles.otros} activos)</p>
           </div>
         </div>

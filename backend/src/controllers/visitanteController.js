@@ -28,7 +28,7 @@ const registrarVisitante = catchAsync(async (req, res, next) => {
       visitante: {
         nombre: datosPersona.nombres,
         apellidos: datosPersona.apellidos,
-        expira_en: '2 horas'
+        expira_en: `${datosPersona.horas_validez} hora${datosPersona.horas_validez > 1 ? 's' : ''}`
       }
     }
   });

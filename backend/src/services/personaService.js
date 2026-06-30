@@ -1,4 +1,5 @@
 const personaModel = require("../models/personaModel");
+const usuarioService = require('./usuarioService');
 
 // Limpia texto
 const limpiarTexto = (texto) => {
@@ -80,6 +81,11 @@ const guardarOActualizarPersona = async (data) => {
 
     // Si pasó los filtros, lo insertamos nuevo
     await personaModel.insertPersona(persona);
+
+    // Si es instructor, crear automáticamente su usuario del sistema
+    if (persona.tipo_persona === 2) {
+        await usuarioService.crearUsuarioInstructor(persona);
+    }
 
     return {
         status: "insertado",

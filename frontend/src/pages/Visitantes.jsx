@@ -17,10 +17,27 @@ const Visitantes = () => {
   const [qrGenerado, setQrGenerado] = useState(null);
 
   const manejarCambio = (e) => {
+
+    const { name, value } = e.target;
+
+    if (name === 'horas_validez') {
+      let horas = Number(value);
+      if (isNaN(horas)) horas = 1;
+      if (horas < 1) horas = 1;
+      if (horas > 12) horas = 12;
+      setFormulario({
+        ...formulario,
+        horas_validez: horas
+      });
+
+      return;
+    }
+
     setFormulario({
       ...formulario,
-      [e.target.name]: e.target.value
+      [name]: value
     });
+
   };
 
   const registrarVisitante = async (e) => {
@@ -96,12 +113,22 @@ const Visitantes = () => {
                   <option value="CC">Cédula</option>
                   <option value="TI">Tarjeta de Identidad</option>
                   <option value="CE">Cédula Extranjería</option>
+                  <option value="PEP">PEP</option>
                 </select>
               </div>
 
               <div className='grupo-input-sena'>
                 <label>Número de Documento</label>
-                <input type="number" name="numero_documento" required value={formulario.numero_documento} onChange={manejarCambio} className='input-sena' placeholder="Ej: 1114309103" />
+                <input type="number" name="numero_documento" required max="2147483647" value={formulario.numero_documento}
+                  onChange={(e) => {
+                    if (Number(e.target.value) > 2147483647) {
+                      return;
+                    }
+                    manejarCambio(e);
+                  }}
+                  className="input-sena"
+                  placeholder="Ej: 1114309103"
+                />
               </div>
 
               <div className='grupo-input-sena'>
@@ -123,8 +150,8 @@ const Visitantes = () => {
               </div>
 
               <div className='grupo-input-sena'>
-                <label>Horas de Validez (Máx. 2 horas)</label>
-                <input type="number" name="horas_validez" min="1" max="2" required value={formulario.horas_validez} onChange={manejarCambio} className='input-sena' />
+                <label>Horas de Validez (Máx. 12 horas)</label>
+                <input type="number" name="horas_validez" min="1" max="12" step="1" required value={formulario.horas_validez} onChange={manejarCambio} className='input-sena' />
               </div>
             </div>
 
